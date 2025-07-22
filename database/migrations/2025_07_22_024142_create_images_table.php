@@ -23,6 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id'); // カテゴリーID
             $table->integer('display_order')->nullable(); // 表示順
             $table->boolean('is_public')->default(true); // 公開/非公開
+            $table->datetime('start_at')->nullable(); // 公開開始日時
+            $table->datetime('end_at')->nullable();   // 公開終了日時
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
