@@ -37,8 +37,8 @@
                             alt="{{ $image->alt_text ?? $image->title }}">
                     </div>
                     <div
-                        class="w-full text-center font-semibold mt-2 px-2 py-1 line-clamp-2 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                        {{ $image->title }}
+                        class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                        {!! nl2br(e($image->title)) !!}
                     </div>
                 </div>
                 @if ($loop->last && $dummy > 0)
