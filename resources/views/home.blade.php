@@ -9,10 +9,13 @@
             src="{{ asset('storage/images/tenpo_gaikan.jpg') }}" alt="店舗外観">
     </div>
 
-    @if (isset($images) && count($images))
+    @php
+        $limited = isset($images) ? $images->where('tag_name', '限定メニュー')->values() : collect();
+    @endphp
+    @if ($limited->count())
         <h2 class="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">限定メニュー</h2>
         @php
-            $count = count($images);
+            $count = $limited->count();
             $mod = $count % 3;
             $dummy = $mod === 0 ? 0 : 3 - $mod;
             $dummyLeft = 0;
@@ -23,8 +26,7 @@
             }
         @endphp
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @php $rowCount = 0; @endphp
-            @foreach ($images as $idx => $image)
+            @foreach ($limited as $idx => $image)
                 @if ($loop->last && $dummy > 0)
                     @for ($i = 0; $i < $dummyLeft; $i++)
                         <div class="aspect-square bg-transparent"></div>
@@ -50,10 +52,13 @@
         </div>
     @endif
 
-    @if (isset($menus) && count($menus))
+    @php
+        $normal = isset($images) ? $images->where('tag_name', '通常メニュー')->values() : collect();
+    @endphp
+    @if ($normal->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">通常メニュー</h2>
         @php
-            $count = count($menus);
+            $count = $normal->count();
             $mod = $count % 3;
             $dummy = $mod === 0 ? 0 : 3 - $mod;
             $dummyLeft = 0;
@@ -64,7 +69,7 @@
             }
         @endphp
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($menus as $idx => $menu)
+            @foreach ($normal as $idx => $menu)
                 @if ($loop->last && $dummy > 0)
                     @for ($i = 0; $i < $dummyLeft; $i++)
                         <div class="aspect-square bg-transparent"></div>
