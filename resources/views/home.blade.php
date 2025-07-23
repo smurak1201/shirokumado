@@ -15,41 +15,81 @@
     @if ($limited->count())
         <h2 class="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">限定メニュー</h2>
         @php
-            $count = $limited->count();
-            $mod = $count % 3;
-            $dummy = $mod === 0 ? 0 : 3 - $mod;
-            $dummyLeft = 0;
-            $dummyRight = 0;
-            if ($dummy > 0) {
-                $dummyLeft = intdiv($dummy, 2);
-                $dummyRight = $dummy - $dummyLeft;
-            }
+            $chunks = $limited->chunk(3);
         @endphp
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($limited as $idx => $image)
-                @if ($loop->last && $dummy > 0)
-                    @for ($i = 0; $i < $dummyLeft; $i++)
-                        <div class="aspect-square bg-transparent"></div>
-                    @endfor
-                @endif
-                <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
-                    <div class="w-full aspect-square overflow-hidden">
-                        <img class="w-full h-full object-cover rounded-3xl"
-                            src="{{ asset('storage/images/' . $image->file_path) }}"
-                            alt="{{ $image->alt_text ?? $image->title }}">
-                    </div>
-                    <div
-                        class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                        {!! nl2br(e($image->title)) !!}
-                    </div>
-                </div>
-                @if ($loop->last && $dummy > 0)
-                    @for ($i = 0; $i < $dummyRight; $i++)
-                        <div class="aspect-square bg-transparent"></div>
-                    @endfor
+            @foreach ($chunks as $chunkIdx => $row)
+                @if (!($loop->last && $row->count() < 3))
+                    @foreach ($row as $image)
+                        <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
+                            <div class="w-full aspect-square overflow-hidden">
+                                <img class="w-full h-full object-cover rounded-3xl"
+                                    src="{{ asset('storage/images/' . $image->file_path) }}"
+                                    alt="{{ $image->alt_text ?? $image->title }}">
+                            </div>
+                            <div
+                                class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                {!! nl2br(e($image->title)) !!}
+                            </div>
+                        </div>
+                    @endforeach
                 @endif
             @endforeach
         </div>
+        @if ($chunks->last()->count() < 3)
+            @php
+                $count = $chunks->last()->count();
+            @endphp
+            @php
+                if ($count === 2) {
+                    $isTwo = true;
+                } else {
+                    $isTwo = false;
+                    $dummyLeft = intdiv(3 - $count, 2);
+                    $dummyRight = 3 - $count - $dummyLeft;
+                }
+            @endphp
+            @if ($isTwo)
+                <div class="flex justify-center gap-x-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
+                    @foreach ($chunks->last() as $image)
+                        <div
+                            class="bg-white overflow-hidden rounded-3xl flex flex-col items-center w-full max-w-[176px] flex-1 basis-0 min-w-0">
+                            <div class="w-full aspect-square overflow-hidden">
+                                <img class="w-full h-full object-cover rounded-3xl"
+                                    src="{{ asset('storage/images/' . $image->file_path) }}"
+                                    alt="{{ $image->alt_text ?? $image->title }}">
+                            </div>
+                            <div
+                                class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                {!! nl2br(e($image->title)) !!}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="grid grid-cols-3 items-stretch mt-6 gap-2 max-w-2xl mx-auto">
+                    @for ($i = 0; $i < $dummyLeft; $i++)
+                        <div class="aspect-square bg-transparent"></div>
+                    @endfor
+                    @foreach ($chunks->last() as $image)
+                        <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
+                            <div class="w-full aspect-square overflow-hidden">
+                                <img class="w-full h-full object-cover rounded-3xl"
+                                    src="{{ asset('storage/images/' . $image->file_path) }}"
+                                    alt="{{ $image->alt_text ?? $image->title }}">
+                            </div>
+                            <div
+                                class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                {!! nl2br(e($image->title)) !!}
+                            </div>
+                        </div>
+                    @endforeach
+                    @for ($i = 0; $i < $dummyRight; $i++)
+                        <div class="aspect-square bg-transparent"></div>
+                    @endfor
+                </div>
+            @endif
+        @endif
     @endif
 
     @php
@@ -58,40 +98,80 @@
     @if ($normal->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">通常メニュー</h2>
         @php
-            $count = $normal->count();
-            $mod = $count % 3;
-            $dummy = $mod === 0 ? 0 : 3 - $mod;
-            $dummyLeft = 0;
-            $dummyRight = 0;
-            if ($dummy > 0) {
-                $dummyLeft = intdiv($dummy, 2);
-                $dummyRight = $dummy - $dummyLeft;
-            }
+            $chunks = $normal->chunk(3);
         @endphp
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($normal as $idx => $menu)
-                @if ($loop->last && $dummy > 0)
-                    @for ($i = 0; $i < $dummyLeft; $i++)
-                        <div class="aspect-square bg-transparent"></div>
-                    @endfor
-                @endif
-                <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
-                    <div class="w-full aspect-square overflow-hidden">
-                        <img class="w-full h-full object-cover rounded-3xl"
-                            src="{{ asset('storage/images/' . $menu->file_path) }}"
-                            alt="{{ $menu->alt_text ?? $menu->title }}">
-                    </div>
-                    <div
-                        class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                        {!! nl2br(e($menu->title)) !!}
-                    </div>
-                </div>
-                @if ($loop->last && $dummy > 0)
-                    @for ($i = 0; $i < $dummyRight; $i++)
-                        <div class="aspect-square bg-transparent"></div>
-                    @endfor
+            @foreach ($chunks as $chunkIdx => $row)
+                @if (!($loop->last && $row->count() < 3))
+                    @foreach ($row as $menu)
+                        <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
+                            <div class="w-full aspect-square overflow-hidden">
+                                <img class="w-full h-full object-cover rounded-3xl"
+                                    src="{{ asset('storage/images/' . $menu->file_path) }}"
+                                    alt="{{ $menu->alt_text ?? $menu->title }}">
+                            </div>
+                            <div
+                                class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                {!! nl2br(e($menu->title)) !!}
+                            </div>
+                        </div>
+                    @endforeach
                 @endif
             @endforeach
         </div>
+        @if ($chunks->last()->count() < 3)
+            @php
+                $count = $chunks->last()->count();
+            @endphp
+            @php
+                if ($count === 2) {
+                    $isTwo = true;
+                } else {
+                    $isTwo = false;
+                    $dummyLeft = intdiv(3 - $count, 2);
+                    $dummyRight = 3 - $count - $dummyLeft;
+                }
+            @endphp
+            @if ($isTwo)
+                <div class="flex justify-center gap-x-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
+                    @foreach ($chunks->last() as $menu)
+                        <div
+                            class="bg-white overflow-hidden rounded-3xl flex flex-col items-center w-full max-w-[176px] flex-1 basis-0 min-w-0">
+                            <div class="w-full aspect-square overflow-hidden">
+                                <img class="w-full h-full object-cover rounded-3xl"
+                                    src="{{ asset('storage/images/' . $menu->file_path) }}"
+                                    alt="{{ $menu->alt_text ?? $menu->title }}">
+                            </div>
+                            <div
+                                class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                {!! nl2br(e($menu->title)) !!}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="grid grid-cols-3 items-stretch mt-6 gap-2 max-w-2xl mx-auto">
+                    @for ($i = 0; $i < $dummyLeft; $i++)
+                        <div class="aspect-square bg-transparent"></div>
+                    @endfor
+                    @foreach ($chunks->last() as $menu)
+                        <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
+                            <div class="w-full aspect-square overflow-hidden">
+                                <img class="w-full h-full object-cover rounded-3xl"
+                                    src="{{ asset('storage/images/' . $menu->file_path) }}"
+                                    alt="{{ $menu->alt_text ?? $menu->title }}">
+                            </div>
+                            <div
+                                class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                {!! nl2br(e($menu->title)) !!}
+                            </div>
+                        </div>
+                    @endforeach
+                    @for ($i = 0; $i < $dummyRight; $i++)
+                        <div class="aspect-square bg-transparent"></div>
+                    @endfor
+                </div>
+            @endif
+        @endif
     @endif
 @endsection
