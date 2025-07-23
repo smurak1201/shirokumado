@@ -22,7 +22,7 @@
                 $dummyRight = $dummy - $dummyLeft;
             }
         @endphp
-        <div class="grid grid-cols-3 place-items-center mt-6 gap-2">
+        <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
             @php $rowCount = 0; @endphp
             @foreach ($images as $idx => $image)
                 @if ($loop->last && $dummy > 0)
@@ -30,10 +30,15 @@
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
                 @endif
-                <div class="bg-white overflow-hidden rounded-3xl">
-                    <img class="w-full h-full object-cover rounded-3xl"
-                        src="{{ asset('storage/images/' . $image->file_path) }}"
-                        alt="{{ $image->alt_text ?? $image->title }}">
+                <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
+                    <div class="w-full aspect-square overflow-hidden">
+                        <img class="w-full h-full object-cover rounded-3xl"
+                            src="{{ asset('storage/images/' . $image->file_path) }}"
+                            alt="{{ $image->alt_text ?? $image->title }}">
+                    </div>
+                    <div class="w-full text-center text-sm text-gray-700 font-semibold mt-2 px-2 py-1 truncate">
+                        {{ $image->title }}
+                    </div>
                 </div>
                 @if ($loop->last && $dummy > 0)
                     @for ($i = 0; $i < $dummyRight; $i++)
