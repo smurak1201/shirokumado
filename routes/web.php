@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\LimitedMenuController;
+use App\Http\Controllers\GetImagesController;
 
-Route::get('/', [LimitedMenuController::class, 'index']);
+Route::get('/', [GetImagesController::class, 'index']);

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Image;
 use Illuminate\Support\Facades\DB;
 
-class LimitedMenuController extends Controller
+class GetImagesController extends Controller
 {
     public function index()
     {
