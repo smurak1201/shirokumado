@@ -86,7 +86,7 @@ class ImagesTableSeeder extends Seeder
             [
                 'file_path'     => 'kougarashi_hot_chai_kakigori.jpg',
                 'alt_text'      => '香がらしのホットなチャイかき氷',
-                'title'         => '香がらしのホットなチャイかき氷',
+                'title'         => "香がらしのホットな\nチャイかき氷",
                 'price_s'       => null,
                 'price_l'       => 1800,
                 'price_other'   => null,
@@ -128,7 +128,7 @@ class ImagesTableSeeder extends Seeder
             [
                 'file_path'     => 'namonori_choco_mint_kori.jpg',
                 'alt_text'      => '波のり超チョコミント氷',
-                'title'         => '波のり超チョコミント氷',
+                'title'         => "波のり\n超チョコミント氷",
                 'price_s'       => null,
                 'price_l'       => 2400,
                 'price_other'   => null,

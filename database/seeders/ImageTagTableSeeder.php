@@ -18,7 +18,6 @@ class ImageTagTableSeeder extends Seeder
             'Instagram_Glyph_Black-scaled.png',
             'Instagram_Glyph_Gradient-scaled.png',
             'Instagram_Glyph_White-scaled.png',
-            'shirokuma_dx.png',
             'tenpo_gaikan.jpg',
         ];
 
