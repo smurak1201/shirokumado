@@ -1,20 +1,23 @@
 <?php
+// このファイルは、Laravelアプリケーションのエントリポイントです。
+// ここからアプリケーションの初期化とリクエスト処理が行われます。
 
-use Illuminate\Foundation\Application;
+// Laravelのリクエストを処理するために必要なクラスをインポート
 use Illuminate\Http\Request;
 
+// Laravelの処理開始時間を記録
 define('LARAVEL_START', microtime(true));
 
-// Determine if the application is in maintenance mode...
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+// メンテナンスモードの場合は専用ファイルを読み込む
+if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-// Register the Composer autoloader...
-require __DIR__.'/../vendor/autoload.php';
+// Composerのオートローダーを読み込む（クラス自動読み込み）
+require __DIR__ . '/../vendor/autoload.php';
 
-// Bootstrap Laravel and handle the request...
-/** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
+// Laravelアプリケーション本体を起動
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
+// リクエストを受け取り、レスポンスを返す
 $app->handleRequest(Request::capture());
