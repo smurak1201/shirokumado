@@ -49,4 +49,44 @@
             @endforeach
         </div>
     @endif
+
+    @if (isset($menus) && count($menus))
+        <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">通常メニュー</h2>
+        @php
+            $count = count($menus);
+            $mod = $count % 3;
+            $dummy = $mod === 0 ? 0 : 3 - $mod;
+            $dummyLeft = 0;
+            $dummyRight = 0;
+            if ($dummy > 0) {
+                $dummyLeft = intdiv($dummy, 2);
+                $dummyRight = $dummy - $dummyLeft;
+            }
+        @endphp
+        <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
+            @foreach ($menus as $idx => $menu)
+                @if ($loop->last && $dummy > 0)
+                    @for ($i = 0; $i < $dummyLeft; $i++)
+                        <div class="aspect-square bg-transparent"></div>
+                    @endfor
+                @endif
+                <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
+                    <div class="w-full aspect-square overflow-hidden">
+                        <img class="w-full h-full object-cover rounded-3xl"
+                            src="{{ asset('storage/images/' . $menu->file_path) }}"
+                            alt="{{ $menu->alt_text ?? $menu->title }}">
+                    </div>
+                    <div
+                        class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                        {!! nl2br(e($menu->title)) !!}
+                    </div>
+                </div>
+                @if ($loop->last && $dummy > 0)
+                    @for ($i = 0; $i < $dummyRight; $i++)
+                        <div class="aspect-square bg-transparent"></div>
+                    @endfor
+                @endif
+            @endforeach
+        </div>
+    @endif
 @endsection
