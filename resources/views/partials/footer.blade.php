@@ -1,4 +1,4 @@
-<footer class="border-t border-gray-200 text-gray-500 text-sm py-2 px-2">
+<footer class="text-gray-500 text-sm py-2 px-2">
     <div class="flex items-center gap-3 mb-1 pl-2">
         <a href="{{ url('/') }}">
             <img src="{{ asset('storage/images/tenpo_icon.jpg') }}" alt="白熊堂ロゴ"
