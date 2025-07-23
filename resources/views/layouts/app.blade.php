@@ -15,9 +15,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body>
+<body class="bg-white text-gray-900 font-sans">
     @include('partials.header')
-    <main>
+    <main class="w-full max-w-xl mx-auto px-2 sm:px-4">
         @yield('content')
     </main>
     @include('partials.footer')
