@@ -14,5 +14,14 @@
         <p>070-9157-3772</p>
         <p>通年営業 月1回不定休</p>
     </div>
+    <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3247.030090467051!2d139.69540947594896!3d35.52825407263695!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601861fa79c87f35%3A0x3e08971c483ebe81!2z44GL44GN5rC3IOeZveeGiuWggg!5e0!3m2!1sja!2sjp!4v1753085235401!5m2!1sja!2sjp"
+        width="300"
+        height="200"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
     <small>&copy; 2025 白熊堂 All rights reserved.</small>
 </footer>
