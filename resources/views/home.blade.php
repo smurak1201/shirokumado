@@ -9,19 +9,13 @@
 </div>
 
 @if(isset($images) && count($images))
-<div class="flex flex-wrap gap-y-4 gap-x-3 justify-center mt-6">
+<div class="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 justify-center mt-6">
     @foreach($images as $image)
-    <div class="w-44 max-w-[90vw] bg-white rounded-xl shadow-md p-2.5 text-center flex flex-col items-center">
+    <div class="aspect-square bg-white flex flex-col items-center justify-center overflow-hidden">
         <img
-            class="w-full h-auto rounded-lg mb-2 object-cover shadow"
+            class="w-full h-full object-cover"
             src="{{ asset('storage/images/' . $image->file_path) }}"
             alt="{{ $image->alt_text ?? $image->title }}">
-        @if(!empty($image->title))
-        <div class="text-base font-bold mb-1 text-gray-800">{{ $image->title }}</div>
-        @endif
-        @if(!empty($image->caption))
-        <div class="text-sm text-gray-600 mb-1">{{ $image->caption }}</div>
-        @endif
     </div>
     @endforeach
 </div>
