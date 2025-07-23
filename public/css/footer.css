@@ -1,3 +1,9 @@
+.site-footer small {
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.95em;
+}
 .footer-info {
     padding-left: 16px;
 }
