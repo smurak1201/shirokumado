@@ -30,8 +30,8 @@
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
                 @endif
-                <div class="bg-white overflow-hidden" style="border-radius: 1.5rem;">
-                    <img class="w-full h-full object-cover" style="border-radius: 1.5rem;"
+                <div class="bg-white overflow-hidden rounded-3xl">
+                    <img class="w-full h-full object-cover rounded-3xl"
                         src="{{ asset('storage/images/' . $image->file_path) }}"
                         alt="{{ $image->alt_text ?? $image->title }}">
                 </div>
