@@ -10,7 +10,14 @@
     </div>
 
     @php
-        $limited = isset($images) ? $images->where('tag_name', '限定メニュー')->values() : collect();
+        $limited = isset($images)
+            ? $images
+                ->where('tag_name', '限定メニュー')
+                ->sortBy(function ($item) {
+                    return [is_null($item->display_order) ? 1 : 0, $item->display_order ?? PHP_INT_MAX, $item->id];
+                })
+                ->values()
+            : collect();
     @endphp
     @if ($limited->count())
         <h2 class="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">限定メニュー</h2>
@@ -32,7 +39,14 @@
     @endif
 
     @php
-        $normal = isset($images) ? $images->where('tag_name', '通常メニュー')->values() : collect();
+        $normal = isset($images)
+            ? $images
+                ->where('tag_name', '通常メニュー')
+                ->sortBy(function ($item) {
+                    return [is_null($item->display_order) ? 1 : 0, $item->display_order ?? PHP_INT_MAX, $item->id];
+                })
+                ->values()
+            : collect();
     @endphp
     @if ($normal->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">通常メニュー</h2>
