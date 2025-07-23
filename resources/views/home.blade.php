@@ -15,12 +15,12 @@
     @if ($limited->count())
         <h2 class="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">限定メニュー</h2>
         @php
-            $chunks = $limited->chunk(3);
+            $limitedChunks = $limited->chunk(3);
         @endphp
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($chunks as $chunkIdx => $row)
-                @if (!($loop->last && $row->count() < 3))
-                    @foreach ($row as $image)
+            @foreach ($limitedChunks as $chunk)
+                @if (!$loop->last)
+                    @foreach ($chunk as $image)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
@@ -36,11 +36,12 @@
                 @endif
             @endforeach
         </div>
-        @if ($chunks->last()->count() < 3)
+        @php
+            $last = collect($limitedChunks[count($limitedChunks) - 1] ?? []);
+        @endphp
+        @if ($last->count() && $last->count() < 3)
             @php
-                $count = $chunks->last()->count();
-            @endphp
-            @php
+                $count = $last->count();
                 if ($count === 2) {
                     $isTwo = true;
                 } else {
@@ -50,8 +51,8 @@
                 }
             @endphp
             @if ($isTwo)
-                <div class="flex justify-center gap-x-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
-                    @foreach ($chunks->last() as $image)
+                <div class="flex flex-col items-center gap-y-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
+                    @foreach ($last as $image)
                         <div
                             class="bg-white overflow-hidden rounded-3xl flex flex-col items-center w-full max-w-[176px] flex-1 basis-0 min-w-0">
                             <div class="w-full aspect-square overflow-hidden">
@@ -71,7 +72,7 @@
                     @for ($i = 0; $i < $dummyLeft; $i++)
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
-                    @foreach ($chunks->last() as $image)
+                    @foreach ($last as $image)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
@@ -98,12 +99,12 @@
     @if ($normal->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">通常メニュー</h2>
         @php
-            $chunks = $normal->chunk(3);
+            $normalChunks = $normal->chunk(3);
         @endphp
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($chunks as $chunkIdx => $row)
-                @if (!($loop->last && $row->count() < 3))
-                    @foreach ($row as $menu)
+            @foreach ($normalChunks as $chunk)
+                @if (!$loop->last)
+                    @foreach ($chunk as $menu)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
@@ -119,11 +120,12 @@
                 @endif
             @endforeach
         </div>
-        @if ($chunks->last()->count() < 3)
+        @php
+            $last = collect($normalChunks[count($normalChunks) - 1] ?? []);
+        @endphp
+        @if ($last->count() && $last->count() < 3)
             @php
-                $count = $chunks->last()->count();
-            @endphp
-            @php
+                $count = $last->count();
                 if ($count === 2) {
                     $isTwo = true;
                 } else {
@@ -133,8 +135,8 @@
                 }
             @endphp
             @if ($isTwo)
-                <div class="flex justify-center gap-x-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
-                    @foreach ($chunks->last() as $menu)
+                <div class="flex flex-col items-center gap-y-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
+                    @foreach ($last as $menu)
                         <div
                             class="bg-white overflow-hidden rounded-3xl flex flex-col items-center w-full max-w-[176px] flex-1 basis-0 min-w-0">
                             <div class="w-full aspect-square overflow-hidden">
@@ -154,7 +156,7 @@
                     @for ($i = 0; $i < $dummyLeft; $i++)
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
-                    @foreach ($chunks->last() as $menu)
+                    @foreach ($last as $menu)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
