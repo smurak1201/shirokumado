@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('price_l', 10, 2)->nullable(); // Lサイズ用金額
             $table->decimal('price_other', 10, 2)->nullable(); // その他サイズ用金額
             $table->text('caption')->nullable(); // 画像の説明やキャプション
-            $table->unsignedBigInteger('category_id'); // カテゴリーID
+            $table->unsignedBigInteger('category_id')->nullable(); // カテゴリーID（NULL許可）
             $table->integer('display_order')->nullable(); // 表示順
             $table->boolean('is_public')->default(true); // 公開/非公開
             $table->datetime('start_at')->nullable(); // 公開開始日時
