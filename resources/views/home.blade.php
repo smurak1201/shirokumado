@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>ヒーロー画像</title>
+    <title>白熊堂</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 
@@ -12,5 +12,3 @@
         <img class="hero-image" src="{{ asset('storage/images/tenpo_gaikan.jpg') }}" alt="店舗外観">
     </div>
 </body>
-
-</html>
