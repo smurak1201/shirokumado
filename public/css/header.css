@@ -1,0 +1,19 @@
+.site-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 24px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+.site-header h1 {
+    margin: 0;
+}
+.site-header img {
+    display: block;
+}
+.site-header nav img {
+    height: 32px;
+    width: auto;
+    vertical-align: middle;
+}
