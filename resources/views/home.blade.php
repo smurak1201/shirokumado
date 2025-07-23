@@ -22,7 +22,7 @@
                 $dummyRight = $dummy - $dummyLeft;
             }
         @endphp
-        <div class="grid grid-cols-3 place-items-center mt-6" style="gap: 2rem;">
+        <div class="grid grid-cols-3 place-items-center mt-6 gap-8">
             @php $rowCount = 0; @endphp
             @foreach ($images as $idx => $image)
                 @if ($loop->last && $dummy > 0)
