@@ -1,10 +1,10 @@
 <footer class="border-t border-gray-200 text-gray-500 text-sm py-2 px-2">
     <div class="flex items-center gap-3 mb-1 pl-2">
         <a href="{{ url('/') }}">
-            <img src="{{ asset('storage/images/tenpo_icon.jpg') }}" alt="白熊堂ロゴ" class="max-w-20 max-h-16 w-auto h-auto object-contain block">
+            <img src="{{ asset('storage/images/tenpo_icon.jpg') }}" alt="白熊堂ロゴ" class="w-12 h-9 object-contain block">
         </a>
         <a href="https://www.instagram.com/shirokumado2021/#" target="_blank" rel="noopener" title="Instagram">
-            <img src="{{ asset('storage/images/Instagram_Glyph_Black-scaled.png') }}" alt="Instagram" class="max-w-7 max-h-5 w-auto h-auto object-contain block">
+            <img src="{{ asset('storage/images/Instagram_Glyph_Black-scaled.png') }}" alt="Instagram" class="w-6 h-5 object-contain block">
         </a>
     </div>
     <div class="flex flex-row gap-4 items-start mt-2 mb-1">

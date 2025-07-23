@@ -3,8 +3,9 @@
 @section('title', '白熊堂')
 
 @section('content')
-<div class="w-screen max-w-screen bg-gray-50 flex items-center justify-center min-h-[100px] mb-2 overflow-hidden">
-    <img class="w-screen h-auto aspect-[16/9] object-cover block max-w-screen min-w-screen" src="{{ asset('storage/images/tenpo_gaikan.jpg') }}" alt="店舗外観">
+
+<div class="bg-gray-50 flex items-center justify-center min-h-[100px] mb-2 overflow-hidden rounded-md">
+    <img class="w-full h-auto aspect-[16/9] object-cover block max-w-2xl mx-auto" src="{{ asset('storage/images/tenpo_gaikan.jpg') }}" alt="店舗外観">
 </div>
 
 @if(isset($images) && count($images))
