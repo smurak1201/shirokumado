@@ -9,15 +9,38 @@
 </div>
 
 @if(isset($images) && count($images))
-<div class="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 justify-center mt-6">
-    @foreach($images as $image)
-    <div class="aspect-square bg-white flex flex-col items-center justify-center overflow-hidden">
-        <img
-            class="w-full h-full object-cover"
-            src="{{ asset('storage/images/' . $image->file_path) }}"
-            alt="{{ $image->alt_text ?? $image->title }}">
-    </div>
+@php
+$count = count($images);
+$mod = $count % 3;
+$dummy = $mod === 0 ? 0 : 3 - $mod;
+$dummyLeft = 0;
+$dummyRight = 0;
+if ($dummy > 0) {
+$dummyLeft = intdiv($dummy, 2);
+$dummyRight = $dummy - $dummyLeft;
+}
+@endphp
+<div class="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 justify-center place-items-center mt-6">
+    @php $rowCount = 0; @endphp
+    @foreach($images as $idx => $image)
+        @if($loop->last && $dummy > 0)
+            @for($i = 0; $i < $dummyLeft; $i++)
+                <div class="aspect-square bg-transparent"></div>
+            @endfor
+        @endif
+        <div class="aspect-square bg-white flex flex-col items-center justify-center overflow-hidden">
+            <img
+                class="w-full h-full object-cover"
+                src="{{ asset('storage/images/' . $image->file_path) }}"
+                alt="{{ $image->alt_text ?? $image->title }}"
+            >
+        </div>
+        @if($loop->last && $dummy > 0)
+            @for($i = 0; $i < $dummyRight; $i++)
+                <div class="aspect-square bg-transparent"></div>
+            @endfor
+        @endif
     @endforeach
-</div>
-@endif
-@endsection
+    </div>
+    @endif
+    @endsection
