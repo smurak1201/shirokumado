@@ -36,7 +36,8 @@
                             src="{{ asset('storage/images/' . $image->file_path) }}"
                             alt="{{ $image->alt_text ?? $image->title }}">
                     </div>
-                    <div class="w-full text-center text-sm text-gray-700 font-semibold mt-2 px-2 py-1 truncate">
+                    <div
+                        class="w-full text-center font-semibold mt-2 px-2 py-1 line-clamp-2 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
                         {{ $image->title }}
                     </div>
                 </div>
