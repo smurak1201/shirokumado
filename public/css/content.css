@@ -1,7 +1,6 @@
 .hero-container {
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto 10px auto;
+    margin: 0 0 10px 0;
     height: 28vh;
     min-height: 100px;
     display: flex;
