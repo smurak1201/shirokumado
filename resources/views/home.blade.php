@@ -10,6 +10,7 @@
     </div>
 
     @if (isset($images) && count($images))
+        <h2 class="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">限定メニュー</h2>
         @php
             $count = count($images);
             $mod = $count % 3;
@@ -21,7 +22,7 @@
                 $dummyRight = $dummy - $dummyLeft;
             }
         @endphp
-        <div class="grid grid-cols-3 gap-1 sm:gap-2 md:gap-4 justify-center place-items-center mt-6">
+        <div class="grid grid-cols-3 gap-8 place-items-center mt-6">
             @php $rowCount = 0; @endphp
             @foreach ($images as $idx => $image)
                 @if ($loop->last && $dummy > 0)
@@ -29,7 +30,7 @@
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
                 @endif
-                <div class="aspect-square bg-white flex flex-col items-center justify-center overflow-hidden">
+                <div class="aspect-square bg-white overflow-hidden">
                     <img class="w-full h-full object-cover" src="{{ asset('storage/images/' . $image->file_path) }}"
                         alt="{{ $image->alt_text ?? $image->title }}">
                 </div>
