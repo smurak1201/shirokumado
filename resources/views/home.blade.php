@@ -11,16 +11,17 @@
 
     @php
         $limited = isset($images) ? $images->where('tag_name', '限定メニュー')->values() : collect();
+        $limitedCount = $limited->count();
+        $limitedGridCount = $limitedCount - ($limitedCount % 3);
+        $limitedGrid = $limited->slice(0, $limitedGridCount);
+        $limitedRemainder = $limited->slice($limitedGridCount);
     @endphp
-    @if ($limited->count())
+    @if ($limitedCount)
         <h2 class="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">限定メニュー</h2>
-        @php
-            $limitedChunks = $limited->chunk(3);
-        @endphp
-        <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($limitedChunks as $chunk)
-                @if (!$loop->last)
-                    @foreach ($chunk as $image)
+        @if ($limitedGrid->count())
+            <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
+                @foreach ($limitedGrid->chunk(3) as $row)
+                    @foreach ($row as $image)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
@@ -33,15 +34,12 @@
                             </div>
                         </div>
                     @endforeach
-                @endif
-            @endforeach
-        </div>
-        @php
-            $last = collect($limitedChunks[count($limitedChunks) - 1] ?? []);
-        @endphp
-        @if ($last->count() && $last->count() < 3)
+                @endforeach
+            </div>
+        @endif
+        @if ($limitedRemainder->count())
             @php
-                $count = $last->count();
+                $count = $limitedRemainder->count();
                 if ($count === 2) {
                     $isTwo = true;
                 } else {
@@ -52,7 +50,7 @@
             @endphp
             @if ($isTwo)
                 <div class="flex flex-col items-center gap-y-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
-                    @foreach ($last as $image)
+                    @foreach ($limitedRemainder as $image)
                         <div
                             class="bg-white overflow-hidden rounded-3xl flex flex-col items-center w-full max-w-[176px] flex-1 basis-0 min-w-0">
                             <div class="w-full aspect-square overflow-hidden">
@@ -72,7 +70,7 @@
                     @for ($i = 0; $i < $dummyLeft; $i++)
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
-                    @foreach ($last as $image)
+                    @foreach ($limitedRemainder as $image)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
@@ -95,16 +93,17 @@
 
     @php
         $normal = isset($images) ? $images->where('tag_name', '通常メニュー')->values() : collect();
+        $normalCount = $normal->count();
+        $normalGridCount = $normalCount - ($normalCount % 3);
+        $normalGrid = $normal->slice(0, $normalGridCount);
+        $normalRemainder = $normal->slice($normalGridCount);
     @endphp
-    @if ($normal->count())
+    @if ($normalCount)
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">通常メニュー</h2>
-        @php
-            $normalChunks = $normal->chunk(3);
-        @endphp
-        <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($normalChunks as $chunk)
-                @if (!$loop->last)
-                    @foreach ($chunk as $menu)
+        @if ($normalGrid->count())
+            <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
+                @foreach ($normalGrid->chunk(3) as $row)
+                    @foreach ($row as $menu)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
@@ -117,15 +116,12 @@
                             </div>
                         </div>
                     @endforeach
-                @endif
-            @endforeach
-        </div>
-        @php
-            $last = collect($normalChunks[count($normalChunks) - 1] ?? []);
-        @endphp
-        @if ($last->count() && $last->count() < 3)
+                @endforeach
+            </div>
+        @endif
+        @if ($normalRemainder->count())
             @php
-                $count = $last->count();
+                $count = $normalRemainder->count();
                 if ($count === 2) {
                     $isTwo = true;
                 } else {
@@ -136,7 +132,7 @@
             @endphp
             @if ($isTwo)
                 <div class="flex flex-col items-center gap-y-2 mt-6 w-full max-w-full overflow-x-hidden px-2 mx-auto">
-                    @foreach ($last as $menu)
+                    @foreach ($normalRemainder as $menu)
                         <div
                             class="bg-white overflow-hidden rounded-3xl flex flex-col items-center w-full max-w-[176px] flex-1 basis-0 min-w-0">
                             <div class="w-full aspect-square overflow-hidden">
@@ -156,7 +152,7 @@
                     @for ($i = 0; $i < $dummyLeft; $i++)
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
-                    @foreach ($last as $menu)
+                    @foreach ($normalRemainder as $menu)
                         <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                             <div class="w-full aspect-square overflow-hidden">
                                 <img class="w-full h-full object-cover rounded-3xl"
@@ -176,4 +172,5 @@
             @endif
         @endif
     @endif
+
 @endsection
