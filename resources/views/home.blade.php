@@ -30,8 +30,9 @@
                         <div class="aspect-square bg-transparent"></div>
                     @endfor
                 @endif
-                <div class="aspect-square bg-white overflow-hidden">
-                    <img class="w-full h-full object-cover" src="{{ asset('storage/images/' . $image->file_path) }}"
+                <div class="bg-white overflow-hidden" style="border-radius: 1.5rem;">
+                    <img class="w-full h-full object-cover" style="border-radius: 1.5rem;"
+                        src="{{ asset('storage/images/' . $image->file_path) }}"
                         alt="{{ $image->alt_text ?? $image->title }}">
                 </div>
                 @if ($loop->last && $dummy > 0)
