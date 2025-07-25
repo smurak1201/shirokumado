@@ -6,7 +6,7 @@
 
     <div class="bg-gray-50 flex items-center justify-center min-h-[100px] mb-2 overflow-hidden rounded-md">
         <img class="w-full h-auto aspect-[16/9] object-cover block max-w-2xl mx-auto"
-            src="{{ asset('storage/images/tenpo_gaikan.jpg') }}" alt="店舗外観">
+            src="{{ asset('images/tenpo_gaikan.jpg') }}" alt="店舗外観">
     </div>
 
     @php
@@ -25,8 +25,7 @@
             @foreach ($limited as $image)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                     <div class="w-full aspect-square overflow-hidden">
-                        <img class="w-full h-full object-cover rounded-3xl"
-                            src="{{ asset('storage/images/' . $image->file_path) }}"
+                        <img class="w-full h-full object-cover rounded-3xl" src="{{ asset('images/' . $image->file_path) }}"
                             alt="{{ $image->alt_text ?? $image->title }}">
                     </div>
                     <div
@@ -54,8 +53,7 @@
             @foreach ($normal as $menu)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                     <div class="w-full aspect-square overflow-hidden">
-                        <img class="w-full h-full object-cover rounded-3xl"
-                            src="{{ asset('storage/images/' . $menu->file_path) }}"
+                        <img class="w-full h-full object-cover rounded-3xl" src="{{ asset('images/' . $menu->file_path) }}"
                             alt="{{ $menu->alt_text ?? $menu->title }}">
                     </div>
                     <div
