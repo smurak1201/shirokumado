@@ -14,10 +14,16 @@ if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php'
 }
 
 // Composerのオートローダーを読み込む（クラス自動読み込み）
+// ローカル
 require __DIR__ . '/../vendor/autoload.php';
+// 本番
+// require __DIR__ . '/shirokumado-la/vendor/autoload.php';
 
 // Laravelアプリケーション本体を起動
+// ローカル
 $app = require_once __DIR__ . '/../bootstrap/app.php';
+// 本番
+// $app = require_once __DIR__ . '/shirokumado-la/bootstrap/app.php';
 
 // リクエストを受け取り、レスポンスを返す
 $app->handleRequest(Request::capture());
