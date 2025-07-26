@@ -7,5 +7,9 @@ use App\Http\Controllers\GetImagesController;
 
 Route::get('/', [GetImagesController::class, 'index']);
 
+
 // FAQページ
 Route::view('/faq', 'faq')->name('faq');
+
+// Instagram投稿一覧ページ
+Route::view('/instagram', 'instagram')->name('instagram');

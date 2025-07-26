@@ -8,8 +8,10 @@
                 class="w-8 h-8 max-w-[32px] max-h-[32px] object-contain align-middle">
         </a>
     </h1>
-    <nav class="ml-auto">
+    <nav class="ml-auto flex gap-4">
         <a href="{{ url('/faq') }}"
             class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">よくある質問</a>
+        <a href="{{ url('/instagram') }}"
+            class="text-sm font-semibold text-gray-700 hover:text-pink-500 transition-colors">投稿一覧</a>
     </nav>
 </header>
