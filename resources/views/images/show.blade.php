@@ -21,7 +21,7 @@
             @endif
         </div>
         @if ($image->caption)
-            <div class="text-gray-600 whitespace-pre-line text-center">{{ $image->caption }}</div>
+            <div class="text-gray-600 whitespace-pre-line text-left">{{ $image->caption }}</div>
         @endif
     </div>
 @endsection
