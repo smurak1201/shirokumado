@@ -18,7 +18,6 @@
             display: none !important;
         }
     </style>
-    <!-- Alpine.jsはVite経由で読み込みます -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
