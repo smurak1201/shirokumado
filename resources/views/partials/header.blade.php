@@ -17,7 +17,7 @@
         </svg>
     </button>
     <!-- ナビゲーション -->
-    <nav :class="{ 'block': open, 'hidden': !open }"
+    <nav x-cloak :class="{ 'block': open, 'hidden': !open }"
         class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-40 md:static md:bg-transparent md:w-auto md:h-auto md:flex md:items-center md:gap-4 md:ml-auto md:z-auto md:p-0 transition-all"
         @click.away="open = false">
         <div
