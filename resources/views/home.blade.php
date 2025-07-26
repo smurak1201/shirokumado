@@ -24,14 +24,17 @@
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
             @foreach ($limited as $image)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
-                    <div class="w-full aspect-square overflow-hidden">
-                        <img class="w-full h-full object-cover rounded-3xl" src="{{ asset('images/' . $image->file_path) }}"
-                            alt="{{ $image->alt_text ?? $image->title }}">
-                    </div>
-                    <div
-                        class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                        {!! nl2br(e($image->title)) !!}
-                    </div>
+                    <a href="{{ route('images.show', $image->id) }}" class="w-full">
+                        <div class="w-full aspect-square overflow-hidden">
+                            <img class="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
+                                src="{{ asset('images/' . $image->file_path) }}"
+                                alt="{{ $image->alt_text ?? $image->title }}">
+                        </div>
+                        <div
+                            class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                            {!! nl2br(e($image->title)) !!}
+                        </div>
+                    </a>
                 </div>
             @endforeach
         </div>
@@ -52,14 +55,16 @@
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
             @foreach ($normal as $menu)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
-                    <div class="w-full aspect-square overflow-hidden">
-                        <img class="w-full h-full object-cover rounded-3xl" src="{{ asset('images/' . $menu->file_path) }}"
-                            alt="{{ $menu->alt_text ?? $menu->title }}">
-                    </div>
-                    <div
-                        class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                        {!! nl2br(e($menu->title)) !!}
-                    </div>
+                    <a href="{{ route('images.show', $menu->id) }}" class="w-full">
+                        <div class="w-full aspect-square overflow-hidden">
+                            <img class="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
+                                src="{{ asset('images/' . $menu->file_path) }}" alt="{{ $menu->alt_text ?? $menu->title }}">
+                        </div>
+                        <div
+                            class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                            {!! nl2br(e($menu->title)) !!}
+                        </div>
+                    </a>
                 </div>
             @endforeach
         </div>
