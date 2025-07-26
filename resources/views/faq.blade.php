@@ -3,7 +3,11 @@
 @section('title', 'よくある質問')
 
 @section('content')
-    <h1 class="text-2xl font-bold text-center mt-8 mb-6 ">よくある質問</h1>
+    <div class="max-w-4xl mx-auto">
+        <h1
+            class="bg-white rounded-2xl shadow text-2xl font-bold text-center py-6 px-4 mb-8 mt-8 tracking-wide text-gray-800">
+            よくある質問</h1>
+    </div>
     <div class="max-w-4xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-white rounded-2xl shadow p-8">
