@@ -1,5 +1,5 @@
 <header class="border-b border-gray-200 bg-transparent">
-    <div class="flex items-center gap-4 px-3 py-2">
+    <div class="flex items-center justify-between px-6 py-2">
         <h1 class="m-0 flex items-center gap-4">
             <a href="{{ url('/') }}">
                 <img src="{{ asset('images/tenpo_icon.jpg') }}" alt="白熊堂ロゴ"
@@ -10,7 +10,7 @@
                     class="w-8 h-8 max-w-[32px] max-h-[32px] object-contain align-middle">
             </a>
         </h1>
-        <nav class="ml-auto flex items-center gap-6">
+        <nav class="flex items-center gap-8">
             <a href="{{ url('/instagram') }}"
                 class="text-sm font-semibold text-gray-700 hover:text-pink-500 transition-colors">投稿一覧</a>
             <a href="{{ url('/faq') }}"
