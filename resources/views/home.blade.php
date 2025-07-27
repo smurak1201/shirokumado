@@ -28,7 +28,7 @@
                         <div class="w-full aspect-square overflow-hidden">
                             <img class="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
                                 src="{{ asset('images/' . $image->file_path) }}"
-                                alt="{{ $image->alt_text ?? $image->title }}">
+                                alt="{{ $image->alt_text ?? $image->title }}" loading="lazy">
                         </div>
                         <div
                             class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
@@ -58,7 +58,8 @@
                     <a href="{{ route('images.show', $menu->id) }}" class="w-full">
                         <div class="w-full aspect-square overflow-hidden">
                             <img class="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
-                                src="{{ asset('images/' . $menu->file_path) }}" alt="{{ $menu->alt_text ?? $menu->title }}">
+                                src="{{ asset('images/' . $menu->file_path) }}" alt="{{ $menu->alt_text ?? $menu->title }}"
+                                loading="lazy">
                         </div>
                         <div
                             class="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
