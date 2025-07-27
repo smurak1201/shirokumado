@@ -66,6 +66,10 @@
                 <p class="text-gray-700 mb-4">当店では店内でのお冷のご提供は行っておりません。そのため、飲み物のお持ち込みは歓迎しております。
                     ただし、食事の持ち込みはご遠慮いただいておりますので、あらかじめご了承いただけますと幸いです。</p>
             </div>
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow p-8">
+                <h2 class="font-semibold text-lg mb-2">お問合せ方法を教えてください</h2>
+                <p class="text-gray-700 mb-4">お問合せにつきましては、白熊堂のInstagramアカウントよりご連絡いただけますようお願いいたします。</p>
+            </div>
         </div>
     </div>
 @endsection
