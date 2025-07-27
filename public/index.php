@@ -17,13 +17,13 @@ if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php'
 // ローカル
 require __DIR__ . '/../vendor/autoload.php';
 // 本番
-// require __DIR__ . '/shirokumado-la/vendor/autoload.php';
+// require __DIR__ . '/shirokumado/vendor/autoload.php';
 
 // Laravelアプリケーション本体を起動
 // ローカル
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 // 本番
-// $app = require_once __DIR__ . '/shirokumado-la/bootstrap/app.php';
+// $app = require_once __DIR__ . '/shirokumado/bootstrap/app.php';
 
 // リクエストを受け取り、レスポンスを返す
 $app->handleRequest(Request::capture());
