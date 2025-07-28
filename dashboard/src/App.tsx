@@ -63,26 +63,22 @@ function App() {
     if (error)
         return <div className="text-center py-8 text-red-500">{error}</div>;
 
-    // Bladeのbody背景色を再現
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
             <MenuSection
                 title="限定メニュー"
                 items={limitedMenu}
                 apiOrigin={apiOrigin}
-                sectionOrder={0}
             />
             <MenuSection
                 title="通常メニュー"
                 items={normalMenu}
                 apiOrigin={apiOrigin}
-                sectionOrder={1}
             />
             <MenuSection
                 title="サイドメニュー"
                 items={sideMenu}
                 apiOrigin={apiOrigin}
-                sectionOrder={2}
             />
         </main>
     );
@@ -92,12 +88,10 @@ function MenuSection({
     title,
     items,
     apiOrigin,
-    sectionOrder,
 }: {
     title: string;
     items: ImageItem[];
     apiOrigin: string;
-    sectionOrder: number;
 }) {
     if (!items.length) return null;
     // Bladeのnl2br(e($image->title))相当の処理
@@ -113,13 +107,12 @@ function MenuSection({
             )
         );
     }
-    // 2つ目以降のh2はmt-12
-    const h2Class = `text-lg font-bold text-gray-700 ${
-        sectionOrder === 0 ? "mt-8" : "mt-12"
-    } mb-4 text-center`;
+
     return (
         <section className="mb-12">
-            <h2 className={h2Class}>{title}</h2>
+            <h2 className="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">
+                {title}
+            </h2>
             <div className="grid grid-cols-3 items-stretch mt-6 gap-2">
                 {items.map((item) => {
                     const imageUrl = `${apiOrigin}/images/${item.file_path}`;
