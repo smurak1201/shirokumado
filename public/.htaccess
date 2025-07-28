@@ -4,6 +4,7 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteBase /shirokumado/
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -22,4 +23,15 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    # JS / CSS キャッシュ無効化
+    <FilesMatch "\.(js|css)$">
+        Header set Cache-Control "no-store"
+    </FilesMatch>
+
+    # PNG画像の読み込み安定化 + MIMEタイプ補強
+    Header set Connection keep-alive
+    AddType image/png .png
 </IfModule>
