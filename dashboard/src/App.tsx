@@ -76,23 +76,26 @@ function App() {
             });
     }, [apiOrigin]);
 
-    // ドラッグ終了時の処理
-    const onDragEnd = (result: DropResult, menuType: string) => {
+    // ドラッグ終了時の処理（全カテゴリ共通）
+    const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
+        const { source, destination } = result;
         let items: ImageItem[] = [];
         let setItems: React.Dispatch<React.SetStateAction<ImageItem[]>>;
-        if (menuType === "限定メニュー") {
+        if (source.droppableId === "limitedMenu") {
             items = Array.from(limitedMenu);
             setItems = setLimitedMenu;
-        } else if (menuType === "通常メニュー") {
+        } else if (source.droppableId === "normalMenu") {
             items = Array.from(normalMenu);
             setItems = setNormalMenu;
-        } else {
+        } else if (source.droppableId === "sideMenu") {
             items = Array.from(sideMenu);
             setItems = setSideMenu;
+        } else {
+            return;
         }
-        const [removed] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, removed);
+        const [removed] = items.splice(source.index, 1);
+        items.splice(destination.index, 0, removed);
         setItems(items);
     };
 
@@ -102,29 +105,19 @@ function App() {
 
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
-            <DragDropContext
-                onDragEnd={(result) => onDragEnd(result, "限定メニュー")}
-            >
+            <DragDropContext onDragEnd={onDragEnd}>
                 <MenuSection
                     title="限定メニュー"
                     items={limitedMenu}
                     apiOrigin={apiOrigin}
                     droppableId="limitedMenu"
                 />
-            </DragDropContext>
-            <DragDropContext
-                onDragEnd={(result) => onDragEnd(result, "通常メニュー")}
-            >
                 <MenuSection
                     title="通常メニュー"
                     items={normalMenu}
                     apiOrigin={apiOrigin}
                     droppableId="normalMenu"
                 />
-            </DragDropContext>
-            <DragDropContext
-                onDragEnd={(result) => onDragEnd(result, "サイドメニュー")}
-            >
                 <MenuSection
                     title="サイドメニュー"
                     items={sideMenu}
@@ -167,10 +160,10 @@ function MenuSection({
             <h2 className="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">
                 {title}
             </h2>
-            <Droppable droppableId={droppableId} direction="horizontal">
+            <Droppable droppableId={droppableId} direction="vertical">
                 {(provided) => (
                     <div
-                        className="grid grid-cols-3 items-stretch mt-6 gap-2"
+                        className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6"
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >
@@ -188,10 +181,9 @@ function MenuSection({
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
                                             className={
-                                                "w-full " +
-                                                (snapshot.isDragging
+                                                snapshot.isDragging
                                                     ? "ring-2 ring-blue-400"
-                                                    : "")
+                                                    : ""
                                             }
                                         >
                                             <div className="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
