@@ -1,25 +1,54 @@
+import { useEffect, useState } from "react";
+
 type ImageItem = {
     id: number;
     title: string;
     file_path: string;
     alt_text?: string;
+    tag_name?: string;
+    category_name?: string;
 };
 
-// ダミーデータ
-const limitedMenu: ImageItem[] = [
-    { id: 1, title: "限定1", file_path: "sample1.jpg" },
-    { id: 2, title: "限定2", file_path: "sample2.jpg" },
-    { id: 3, title: "限定3", file_path: "sample3.jpg" },
-];
-const normalMenu: ImageItem[] = [
-    { id: 4, title: "通常1", file_path: "sample4.jpg" },
-    { id: 5, title: "通常2", file_path: "sample5.jpg" },
-    { id: 6, title: "通常3", file_path: "sample6.jpg" },
-];
-const sideMenu: ImageItem[] = [
-    { id: 7, title: "サイド1", file_path: "sample7.jpg" },
-    { id: 8, title: "サイド2", file_path: "sample8.jpg" },
-];
+function App() {
+    const [images, setImages] = useState<ImageItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        fetch("/api/images")
+            .then((res) => {
+                if (!res.ok) throw new Error("API error");
+                return res.json();
+            })
+            .then((data) => {
+                setImages(data);
+                setLoading(false);
+            })
+            .catch(() => {
+                setError("データの取得に失敗しました");
+                setLoading(false);
+            });
+    }, []);
+
+    // カテゴリー・タグごとにフィルタ
+    const limitedMenu = images.filter((img) => img.tag_name === "限定メニュー");
+    const normalMenu = images.filter((img) => img.tag_name === "通常メニュー");
+    const sideMenu = images.filter(
+        (img) => img.category_name === "サイドメニュー"
+    );
+
+    if (loading) return <div className="text-center py-8">読み込み中...</div>;
+    if (error)
+        return <div className="text-center py-8 text-red-500">{error}</div>;
+
+    return (
+        <div className="max-w-5xl mx-auto px-2 py-8">
+            <MenuSection title="限定メニュー" items={limitedMenu} />
+            <MenuSection title="通常メニュー" items={normalMenu} />
+            <MenuSection title="サイドメニュー" items={sideMenu} />
+        </div>
+    );
+}
 
 function MenuSection({ title, items }: { title: string; items: ImageItem[] }) {
     if (!items.length) return null;
@@ -49,16 +78,6 @@ function MenuSection({ title, items }: { title: string; items: ImageItem[] }) {
                 ))}
             </div>
         </section>
-    );
-}
-
-function App() {
-    return (
-        <div className="max-w-5xl mx-auto px-2 py-8">
-            <MenuSection title="限定メニュー" items={limitedMenu} />
-            <MenuSection title="通常メニュー" items={normalMenu} />
-            <MenuSection title="サイドメニュー" items={sideMenu} />
-        </div>
     );
 }
 
