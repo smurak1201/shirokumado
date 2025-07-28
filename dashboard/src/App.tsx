@@ -106,27 +106,24 @@ function App() {
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex flex-col sm:flex-row gap-6 w-full justify-center">
+                <div className="grid grid-cols-3 gap-6 w-full">
                     <MenuSection
                         title="限定メニュー"
                         items={limitedMenu}
                         apiOrigin={apiOrigin}
                         droppableId="limitedMenu"
-                        sectionClass="min-w-[220px] max-w-xs flex-1"
                     />
                     <MenuSection
                         title="通常メニュー"
                         items={normalMenu}
                         apiOrigin={apiOrigin}
                         droppableId="normalMenu"
-                        sectionClass="min-w-[220px] max-w-xs flex-1"
                     />
                     <MenuSection
                         title="サイドメニュー"
                         items={sideMenu}
                         apiOrigin={apiOrigin}
                         droppableId="sideMenu"
-                        sectionClass="min-w-[220px] max-w-xs flex-1"
                     />
                 </div>
             </DragDropContext>
