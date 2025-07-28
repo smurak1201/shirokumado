@@ -6,6 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
+    base: '/shirokumado/dashboard/',
     plugins: [react(), tsconfigPaths()],
     define: {
       'import.meta.env.VITE_APP_URL': JSON.stringify(env.APP_URL),
