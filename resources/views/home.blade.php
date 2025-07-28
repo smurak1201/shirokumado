@@ -20,7 +20,7 @@
             : collect();
     @endphp
     @if ($limited->count())
-        <h2 class="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">限定メニュー</h2>
+        <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">限定メニュー</h2>
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
             @foreach ($limited as $image)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
