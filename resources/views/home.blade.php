@@ -72,19 +72,19 @@
     @endif
 
     @php
-        $normal = isset($images)
+        $side = isset($images)
             ? $images
-                ->where('tag_name', 'サイドメニュー')
+                ->where('category_name', 'サイドメニュー')
                 ->sortBy(function ($item) {
                     return [is_null($item->display_order) ? 1 : 0, $item->display_order ?? PHP_INT_MAX, $item->id];
                 })
                 ->values()
             : collect();
     @endphp
-    @if ($normal->count())
+    @if ($side->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">サイドメニュー</h2>
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($normal as $menu)
+            @foreach ($side as $menu)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                     <a href="{{ route('images.show', $menu->id) }}" class="w-full">
                         <div class="w-full aspect-square overflow-hidden">
