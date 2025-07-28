@@ -1,9 +1,26 @@
+// BladeのsortByロジックを再現
+function sortMenu(items: ImageItem[]) {
+    return [...items].sort((a, b) => {
+        // display_orderがnullは後ろ
+        if (a.display_order == null && b.display_order != null) return 1;
+        if (a.display_order != null && b.display_order == null) return -1;
+        // display_orderで昇順
+        if (a.display_order !== b.display_order) {
+            return (
+                (a.display_order ?? Infinity) - (b.display_order ?? Infinity)
+            );
+        }
+        // idで昇順
+        return a.id - b.id;
+    });
+}
 import { useEffect, useState } from "react";
 
 type ImageItem = {
     id: number;
     title: string;
     file_path: string;
+    display_order?: number | null;
     alt_text?: string;
     tag_name?: string;
     category_name?: string;
@@ -30,11 +47,15 @@ function App() {
             });
     }, []);
 
-    // カテゴリー・タグごとにフィルタ
-    const limitedMenu = images.filter((img) => img.tag_name === "限定メニュー");
-    const normalMenu = images.filter((img) => img.tag_name === "通常メニュー");
-    const sideMenu = images.filter(
-        (img) => img.category_name === "サイドメニュー"
+    // Bladeのロジックと同じ順序で各カテゴリをソート
+    const limitedMenu = sortMenu(
+        images.filter((img) => img.tag_name === "限定メニュー")
+    );
+    const normalMenu = sortMenu(
+        images.filter((img) => img.tag_name === "通常メニュー")
+    );
+    const sideMenu = sortMenu(
+        images.filter((img) => img.category_name === "サイドメニュー")
     );
 
     if (loading) return <div className="text-center py-8">読み込み中...</div>;
