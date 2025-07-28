@@ -116,9 +116,8 @@ function MenuSection({
             <div className="grid grid-cols-3 items-stretch mt-6 gap-2">
                 {items.map((item) => {
                     const imageUrl = `${apiOrigin}/images/${item.file_path}`;
-                    const detailUrl = `/images/${item.id}`;
                     return (
-                        <a key={item.id} href={detailUrl} className="w-full">
+                        <div key={item.id} className="w-full">
                             <div className="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                                 <div className="w-full aspect-square overflow-hidden rounded-3xl">
                                     <img
@@ -132,7 +131,7 @@ function MenuSection({
                                     {nl2br(item.title)}
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     );
                 })}
             </div>
