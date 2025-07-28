@@ -141,26 +141,29 @@ function App() {
         return <div className="text-center py-8 text-red-500">{error}</div>;
 
     return (
-        <main className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-8">
+        <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex flex-col sm:flex-row gap-6 w-full">
+                <div className="flex flex-col sm:flex-row gap-6 w-full justify-center">
                     <MenuSection
                         title="限定メニュー"
                         items={limitedMenu}
                         apiOrigin={apiOrigin}
                         droppableId="limitedMenu"
+                        sectionClass="min-w-[220px] max-w-xs flex-1"
                     />
                     <MenuSection
                         title="通常メニュー"
                         items={normalMenu}
                         apiOrigin={apiOrigin}
                         droppableId="normalMenu"
+                        sectionClass="min-w-[220px] max-w-xs flex-1"
                     />
                     <MenuSection
                         title="サイドメニュー"
                         items={sideMenu}
                         apiOrigin={apiOrigin}
                         droppableId="sideMenu"
+                        sectionClass="min-w-[220px] max-w-xs flex-1"
                     />
                 </div>
             </DragDropContext>
@@ -173,6 +176,7 @@ type MenuSectionProps = {
     items: ImageItem[];
     apiOrigin: string;
     droppableId: string;
+    sectionClass?: string;
 };
 
 function MenuSection({
@@ -180,8 +184,9 @@ function MenuSection({
     items,
     apiOrigin,
     droppableId,
+    sectionClass = "",
 }: MenuSectionProps) {
-    if (!items.length) return null;
+    // 管理画面ではitemsが空でも必ずセクションを表示
     function nl2br(str: string) {
         return str.split(/\r?\n/).map((line, idx, arr) =>
             idx < arr.length - 1 ? (
@@ -196,57 +201,63 @@ function MenuSection({
     }
     // リスト型DnD: 1カラム縦並び
     return (
-        <section className="flex-1 min-w-0">
+        <section className={`flex-1 min-w-0 ${sectionClass}`}>
             <h2 className="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">
                 {title}
             </h2>
             <Droppable droppableId={droppableId} direction="vertical">
                 {(provided) => (
                     <div
-                        className="flex flex-col gap-4 mt-6"
+                        className="flex flex-col gap-4 mt-6 min-h-[320px]"
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >
-                        {items.map((item, idx) => {
-                            const imageUrl = `${apiOrigin}/images/${item.file_path}`;
-                            return (
-                                <Draggable
-                                    key={item.id}
-                                    draggableId={String(item.id)}
-                                    index={idx}
-                                >
-                                    {(provided, snapshot) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            className={
-                                                snapshot.isDragging
-                                                    ? "ring-2 ring-blue-400"
-                                                    : ""
-                                            }
-                                        >
-                                            <div className="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
-                                                <div className="w-full aspect-square overflow-hidden rounded-3xl">
-                                                    <img
-                                                        className="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
-                                                        src={imageUrl}
-                                                        alt={
-                                                            item.alt_text ||
-                                                            item.title
-                                                        }
-                                                        loading="lazy"
-                                                    />
-                                                </div>
-                                                <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                                                    {nl2br(item.title)}
+                        {items.length === 0 ? (
+                            <div className="flex-1 min-h-[220px] flex items-center justify-center text-gray-300 text-sm select-none border-2 border-dashed border-gray-200 rounded-3xl">
+                                画像がありません
+                            </div>
+                        ) : (
+                            items.map((item, idx) => {
+                                const imageUrl = `${apiOrigin}/images/${item.file_path}`;
+                                return (
+                                    <Draggable
+                                        key={item.id}
+                                        draggableId={String(item.id)}
+                                        index={idx}
+                                    >
+                                        {(provided, snapshot) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                className={
+                                                    snapshot.isDragging
+                                                        ? "ring-2 ring-blue-400"
+                                                        : ""
+                                                }
+                                            >
+                                                <div className="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
+                                                    <div className="w-full aspect-square overflow-hidden rounded-3xl">
+                                                        <img
+                                                            className="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
+                                                            src={imageUrl}
+                                                            alt={
+                                                                item.alt_text ||
+                                                                item.title
+                                                            }
+                                                            loading="lazy"
+                                                        />
+                                                    </div>
+                                                    <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                                        {nl2br(item.title)}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </Draggable>
-                            );
-                        })}
+                                        )}
+                                    </Draggable>
+                                );
+                            })
+                        )}
                         {provided.placeholder}
                     </div>
                 )}
