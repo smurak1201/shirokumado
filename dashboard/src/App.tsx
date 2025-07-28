@@ -14,7 +14,7 @@ function sortMenu(items: ImageItem[]) {
         return a.id - b.id;
     });
 }
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type ImageItem = {
     id: number;
@@ -75,6 +75,19 @@ function MenuSection({ title, items }: { title: string; items: ImageItem[] }) {
     if (!items.length) return null;
     const apiOrigin =
         import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:8000";
+    // Bladeのnl2br(e($image->title))相当の処理
+    function nl2br(str: string) {
+        return str.split(/\r?\n/).map((line, idx, arr) =>
+            idx < arr.length - 1 ? (
+                <React.Fragment key={idx}>
+                    {line}
+                    <br />
+                </React.Fragment>
+            ) : (
+                <React.Fragment key={idx}>{line}</React.Fragment>
+            )
+        );
+    }
     return (
         <section className="mb-12">
             <h2 className="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">
@@ -82,7 +95,6 @@ function MenuSection({ title, items }: { title: string; items: ImageItem[] }) {
             </h2>
             <div className="grid grid-cols-3 items-stretch mt-6 gap-2">
                 {items.map((item) => {
-                    // 画像の絶対URLを組み立てる
                     const imageUrl = `${apiOrigin}/images/${item.file_path}`;
                     return (
                         <div
@@ -97,8 +109,11 @@ function MenuSection({ title, items }: { title: string; items: ImageItem[] }) {
                                     loading="lazy"
                                 />
                             </div>
-                            <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                                {item.title}
+                            <div
+                                className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700"
+                                style={{ whiteSpace: "pre-line" }}
+                            >
+                                {nl2br(item.title)}
                             </div>
                         </div>
                     );
