@@ -15,7 +15,7 @@ function App() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        fetch("/api/images")
+        fetch("http://127.0.0.1:8000/api/images")
             .then((res) => {
                 if (!res.ok) throw new Error("API error");
                 return res.json();
