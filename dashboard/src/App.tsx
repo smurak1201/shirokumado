@@ -63,10 +63,12 @@ function App() {
         return <div className="text-center py-8 text-red-500">{error}</div>;
 
     return (
-        <div className="max-w-5xl mx-auto px-2 py-8">
-            <MenuSection title="限定メニュー" items={limitedMenu} />
-            <MenuSection title="通常メニュー" items={normalMenu} />
-            <MenuSection title="サイドメニュー" items={sideMenu} />
+        <div className="bg-white text-gray-900 font-sans w-full overflow-x-hidden min-h-screen">
+            <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
+                <MenuSection title="限定メニュー" items={limitedMenu} />
+                <MenuSection title="通常メニュー" items={normalMenu} />
+                <MenuSection title="サイドメニュー" items={sideMenu} />
+            </main>
         </div>
     );
 }
