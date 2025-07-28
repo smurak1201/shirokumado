@@ -52,30 +52,36 @@ function App() {
 
 function MenuSection({ title, items }: { title: string; items: ImageItem[] }) {
     if (!items.length) return null;
+    const apiOrigin =
+        import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:8000";
     return (
         <section className="mb-12">
             <h2 className="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">
                 {title}
             </h2>
             <div className="grid grid-cols-3 items-stretch mt-6 gap-2">
-                {items.map((item) => (
-                    <div
-                        key={item.id}
-                        className="bg-white overflow-hidden rounded-3xl flex flex-col items-center"
-                    >
-                        <div className="w-full aspect-square overflow-hidden">
-                            <img
-                                className="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
-                                src={"/images/" + item.file_path}
-                                alt={item.alt_text || item.title}
-                                loading="lazy"
-                            />
+                {items.map((item) => {
+                    // 画像の絶対URLを組み立てる
+                    const imageUrl = `${apiOrigin}/images/${item.file_path}`;
+                    return (
+                        <div
+                            key={item.id}
+                            className="bg-white overflow-hidden rounded-3xl flex flex-col items-center"
+                        >
+                            <div className="w-full aspect-square overflow-hidden">
+                                <img
+                                    className="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
+                                    src={imageUrl}
+                                    alt={item.alt_text || item.title}
+                                    loading="lazy"
+                                />
+                            </div>
+                            <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                {item.title}
+                            </div>
                         </div>
-                        <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
-                            {item.title}
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </section>
     );
