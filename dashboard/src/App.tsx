@@ -213,8 +213,8 @@ function MenuSection({
                         {...provided.droppableProps}
                     >
                         {items.length === 0 ? (
-                            <div className="flex-1 min-h-[220px] flex items-center justify-center text-gray-300 text-sm select-none border-2 border-dashed border-gray-200 rounded-3xl">
-                                画像がありません
+                            <div className="w-full aspect-square bg-white overflow-hidden rounded-3xl flex items-center justify-center text-gray-300 text-sm select-none border-2 border-dashed border-gray-200">
+                                登録がありません
                             </div>
                         ) : (
                             items.map((item, idx) => {
