@@ -248,7 +248,7 @@ function MenuSection({
                                                             loading="lazy"
                                                         />
                                                     </div>
-                                                    <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700">
+                                                    <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700 min-h-[3em] max-h-[3em] flex items-center justify-center leading-snug line-clamp-2">
                                                         {nl2br(item.title)}
                                                     </div>
                                                 </div>
