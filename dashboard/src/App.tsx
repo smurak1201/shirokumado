@@ -76,63 +76,26 @@ function App() {
             });
     }, [apiOrigin]);
 
-    // ドラッグ終了時の処理（全カテゴリ共通）
-    // グリッドDnD用: ドロップ先をマウス座標から計算
+    // ドラッグ終了時の処理（リストDnD用、シンプル版）
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
         const { source, destination } = result;
         let items: ImageItem[] = [];
         let setItems: React.Dispatch<React.SetStateAction<ImageItem[]>>;
-        let droppableClass = "";
         if (source.droppableId === "limitedMenu") {
             items = Array.from(limitedMenu);
             setItems = setLimitedMenu;
-            droppableClass = ".limitedMenu-droppable";
         } else if (source.droppableId === "normalMenu") {
             items = Array.from(normalMenu);
             setItems = setNormalMenu;
-            droppableClass = ".normalMenu-droppable";
         } else if (source.droppableId === "sideMenu") {
             items = Array.from(sideMenu);
             setItems = setSideMenu;
-            droppableClass = ".sideMenu-droppable";
         } else {
             return;
         }
-
-        // グリッドDnD: ドロップ位置をマウス座標から計算
-        // 1. ドロップ先の親グリッド要素を取得
-        // 2. その子要素の位置・サイズから、どこに挿入するかを決定
-        // 3. そのインデックスに移動
-        // 4. Fallback: 通常のDnD
-        let insertIndex = destination.index;
-        try {
-            const grid = document.querySelector(droppableClass);
-            if (grid) {
-                const rect = grid.getBoundingClientRect();
-                // ドラッグ終了時のマウス座標
-                const x =
-                    (result as any).clientOffset?.x || (result as any).clientX;
-                const y =
-                    (result as any).clientOffset?.y || (result as any).clientY;
-                if (typeof x === "number" && typeof y === "number") {
-                    // 子要素一覧
-                    const children = Array.from(grid.children);
-                    for (let i = 0; i < children.length; i++) {
-                        const c = children[i] as HTMLElement;
-                        const cRect = c.getBoundingClientRect();
-                        if (y < cRect.bottom && x < cRect.right) {
-                            insertIndex = i;
-                            break;
-                        }
-                    }
-                }
-            }
-        } catch (e) {
-            // fallback: 何もしない
-        }
         const [removed] = items.splice(source.index, 1);
-        items.splice(insertIndex, 0, removed);
+        items.splice(destination.index, 0, removed);
         setItems(items);
     };
 
