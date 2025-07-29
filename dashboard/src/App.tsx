@@ -1,49 +1,59 @@
-import React, { useEffect, useState } from "react";
-// BladeのsortByロジックを再現
-function sortMenu(items: ImageItem[]) {
-    return [...items].sort((a, b) => {
-        // display_orderがnullは後ろ
-        if (a.display_order == null && b.display_order != null) return 1;
-        if (a.display_order != null && b.display_order == null) return -1;
-        // display_orderで昇順
-        if (a.display_order !== b.display_order) {
-            return (
-                (a.display_order ?? Infinity) - (b.display_order ?? Infinity)
-            );
-        }
-        // idで昇順
-        return a.id - b.id;
-    });
-}
+// ...state宣言...
 
-type ImageItem = {
-    id: number;
-    title: string;
-    file_path: string;
-    display_order?: number | null;
-    alt_text?: string;
-    tag_name?: string;
-    category_name?: string;
+// 並び替えボタン用: id昇順/降順でstateを更新
+const handleLimitedSort = () => {
+    if (limitedAsc) {
+        setLimitedMenu([...limitedMenu].sort((a, b) => b.id - a.id));
+    } else {
+        setLimitedMenu([...limitedMenu].sort((a, b) => a.id - b.id));
+    }
+    setLimitedAsc((v) => !v);
+};
+const handleNormalSort = () => {
+    if (normalAsc) {
+        setNormalMenu([...normalMenu].sort((a, b) => b.id - a.id));
+    } else {
+        setNormalMenu([...normalMenu].sort((a, b) => a.id - b.id));
+    }
+    setNormalAsc((v) => !v);
+};
+const handleSideSort = () => {
+    if (sideAsc) {
+        setSideMenu([...sideMenu].sort((a, b) => b.id - a.id));
+    } else {
+        setSideMenu([...sideMenu].sort((a, b) => a.id - b.id));
+    }
+    setSideAsc((v) => !v);
 };
 
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import type { DropResult } from "@hello-pangea/dnd";
+import React, { useEffect, useState } from "react";
+import MenuSection from "./MenuSection";
 
 function App() {
+    type ImageItem = {
+        id: number;
+        title: string;
+        file_path: string;
+        display_order?: number | null;
+        alt_text?: string;
+        tag_name?: string;
+        category_name?: string;
+    };
+
     // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
-    const [activeTab, setActiveTab] = useState(0);
+    const [activeTab, setActiveTab] = useState<number>(0);
     const apiOrigin = import.meta.env.VITE_API_ORIGIN;
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>("");
 
     // 並び替え用state（各カテゴリごと）
     const [limitedMenu, setLimitedMenu] = useState<ImageItem[]>([]);
     const [normalMenu, setNormalMenu] = useState<ImageItem[]>([]);
     const [sideMenu, setSideMenu] = useState<ImageItem[]>([]);
     // 並び順トグルstate（true: id昇順, false: id降順）
-    const [limitedAsc, setLimitedAsc] = useState(true);
-    const [normalAsc, setNormalAsc] = useState(true);
-    const [sideAsc, setSideAsc] = useState(true);
+    const [limitedAsc, setLimitedAsc] = useState<boolean>(true);
+    const [normalAsc, setNormalAsc] = useState<boolean>(true);
+    const [sideAsc, setSideAsc] = useState<boolean>(true);
 
     // 並び順をDBに登録する関数
     const updateDisplayOrder = async (
@@ -83,27 +93,21 @@ function App() {
                 if (!res.ok) throw new Error("API error");
                 return res.json();
             })
-            .then((data) => {
+            .then((data: ImageItem[]) => {
                 setLimitedMenu(
-                    sortMenu(
-                        data.filter(
-                            (img: ImageItem) => img.tag_name === "限定メニュー"
-                        )
+                    data.filter(
+                        (img: ImageItem) => img.tag_name === "限定メニュー"
                     )
                 );
                 setNormalMenu(
-                    sortMenu(
-                        data.filter(
-                            (img: ImageItem) => img.tag_name === "通常メニュー"
-                        )
+                    data.filter(
+                        (img: ImageItem) => img.tag_name === "通常メニュー"
                     )
                 );
                 setSideMenu(
-                    sortMenu(
-                        data.filter(
-                            (img: ImageItem) =>
-                                img.category_name === "サイドメニュー"
-                        )
+                    data.filter(
+                        (img: ImageItem) =>
+                            img.category_name === "サイドメニュー"
                     )
                 );
                 setLoading(false);
@@ -115,7 +119,7 @@ function App() {
     }, [apiOrigin]);
 
     // ドラッグ終了時の処理（リストDnD用、シンプル版）
-    const onDragEnd = (result: DropResult) => {
+    const onDragEnd = (result: any) => {
         if (!result.destination) return;
         const { source, destination } = result;
         let items: ImageItem[] = [];
@@ -135,40 +139,6 @@ function App() {
         const [removed] = items.splice(source.index, 1);
         items.splice(destination.index, 0, removed);
         setItems(items);
-    };
-
-    // 早期リターンはHooksの後で
-    if (loading) {
-        return <div className="text-center py-8">読み込み中...</div>;
-    }
-    if (error) {
-        return <div className="text-center py-8 text-red-500">{error}</div>;
-    }
-
-    // 並び替えボタン用: id昇順/降順でstateを更新
-    const handleLimitedSort = () => {
-        if (limitedAsc) {
-            setLimitedMenu([...limitedMenu].sort((a, b) => b.id - a.id));
-        } else {
-            setLimitedMenu([...limitedMenu].sort((a, b) => a.id - b.id));
-        }
-        setLimitedAsc((v) => !v);
-    };
-    const handleNormalSort = () => {
-        if (normalAsc) {
-            setNormalMenu([...normalMenu].sort((a, b) => b.id - a.id));
-        } else {
-            setNormalMenu([...normalMenu].sort((a, b) => a.id - b.id));
-        }
-        setNormalAsc((v) => !v);
-    };
-    const handleSideSort = () => {
-        if (sideAsc) {
-            setSideMenu([...sideMenu].sort((a, b) => b.id - a.id));
-        } else {
-            setSideMenu([...sideMenu].sort((a, b) => a.id - b.id));
-        }
-        setSideAsc((v) => !v);
     };
 
     return (
@@ -198,46 +168,45 @@ function App() {
 
             {/* タブごとの画面 */}
             {activeTab === 0 && (
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <div className="grid grid-cols-3 gap-6 w-full">
-                        <MenuSection
-                            title="限定メニュー"
-                            items={limitedMenu}
-                            apiOrigin={apiOrigin}
-                            droppableId="limitedMenu"
-                            droppableType="limited"
-                            sortAsc={limitedAsc}
-                            onToggleSort={handleLimitedSort}
-                            onRegisterOrder={async () =>
-                                await updateDisplayOrder("limitedMenu")
-                            }
-                        />
-                        <MenuSection
-                            title="通常メニュー"
-                            items={normalMenu}
-                            apiOrigin={apiOrigin}
-                            droppableId="normalMenu"
-                            droppableType="normal"
-                            sortAsc={normalAsc}
-                            onToggleSort={handleNormalSort}
-                            onRegisterOrder={async () =>
-                                await updateDisplayOrder("normalMenu")
-                            }
-                        />
-                        <MenuSection
-                            title="サイドメニュー"
-                            items={sideMenu}
-                            apiOrigin={apiOrigin}
-                            droppableId="sideMenu"
-                            droppableType="side"
-                            sortAsc={sideAsc}
-                            onToggleSort={handleSideSort}
-                            onRegisterOrder={async () =>
-                                await updateDisplayOrder("sideMenu")
-                            }
-                        />
-                    </div>
-                </DragDropContext>
+                <div>
+                    {/* DragDropContextはMenuSection.tsxで利用 */}
+                    <MenuSection
+                        title="限定メニュー"
+                        items={limitedMenu}
+                        apiOrigin={apiOrigin}
+                        droppableId="limitedMenu"
+                        droppableType="limited"
+                        sortAsc={limitedAsc}
+                        onToggleSort={handleLimitedSort}
+                        onRegisterOrder={async () =>
+                            await updateDisplayOrder("limitedMenu")
+                        }
+                    />
+                    <MenuSection
+                        title="通常メニュー"
+                        items={normalMenu}
+                        apiOrigin={apiOrigin}
+                        droppableId="normalMenu"
+                        droppableType="normal"
+                        sortAsc={normalAsc}
+                        onToggleSort={handleNormalSort}
+                        onRegisterOrder={async () =>
+                            await updateDisplayOrder("normalMenu")
+                        }
+                    />
+                    <MenuSection
+                        title="サイドメニュー"
+                        items={sideMenu}
+                        apiOrigin={apiOrigin}
+                        droppableId="sideMenu"
+                        droppableType="side"
+                        sortAsc={sideAsc}
+                        onToggleSort={handleSideSort}
+                        onRegisterOrder={async () =>
+                            await updateDisplayOrder("sideMenu")
+                        }
+                    />
+                </div>
             )}
             {activeTab === 1 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
@@ -268,135 +237,6 @@ function App() {
                 </div>
             )}
         </main>
-    );
-}
-
-type MenuSectionProps = {
-    title: string;
-    items: ImageItem[];
-    apiOrigin: string;
-    droppableId: string;
-    sectionClass?: string;
-    sortAsc?: boolean;
-    onToggleSort?: () => void;
-    onRegisterOrder?: () => void;
-    droppableType?: string;
-};
-
-function MenuSection(props: MenuSectionProps) {
-    const {
-        title,
-        items,
-        apiOrigin,
-        droppableId,
-        sectionClass = "",
-        droppableType = "",
-        sortAsc,
-        onToggleSort,
-        onRegisterOrder,
-    } = props;
-    // 管理画面ではitemsが空でも必ずセクションを表示
-    function nl2br(str: string) {
-        return str.split(/\r?\n/).map((line, idx, arr) =>
-            idx < arr.length - 1 ? (
-                <React.Fragment key={idx}>
-                    {line}
-                    <br />
-                </React.Fragment>
-            ) : (
-                <React.Fragment key={idx}>{line}</React.Fragment>
-            )
-        );
-    }
-
-    return (
-        <section className={`flex-1 min-w-0 ${sectionClass}`}>
-            <div className="flex flex-col items-center mt-8 mb-4">
-                <h2 className="text-lg font-bold text-gray-700 text-center mb-2">
-                    {title}
-                </h2>
-                {onToggleSort && typeof sortAsc === "boolean" && (
-                    <button
-                        type="button"
-                        className="text-xs px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 mb-1"
-                        onClick={onToggleSort}
-                    >
-                        登録IDで{sortAsc ? "降順" : "昇順"}に並び替え
-                    </button>
-                )}
-                {onRegisterOrder && (
-                    <button
-                        type="button"
-                        className="text-xs px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white mt-1"
-                        onClick={onRegisterOrder}
-                    >
-                        DBに登録
-                    </button>
-                )}
-            </div>
-            <Droppable
-                droppableId={droppableId}
-                direction="vertical"
-                type={droppableType}
-            >
-                {(provided) => (
-                    <div
-                        className="flex flex-col gap-4 mt-6 min-h-[320px] bg-white transition-colors duration-200"
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                    >
-                        {items.length === 0 ? (
-                            <div className="w-full aspect-square bg-white overflow-hidden rounded-3xl flex items-center justify-center text-gray-300 text-sm select-none border-2 border-dashed border-gray-200">
-                                登録がありません
-                            </div>
-                        ) : (
-                            items.map((item, idx) => {
-                                const imageUrl = `${apiOrigin}/images/${item.file_path}`;
-                                return (
-                                    <Draggable
-                                        key={item.id}
-                                        draggableId={String(item.id)}
-                                        index={idx}
-                                    >
-                                        {(provided, snapshot) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className={
-                                                    snapshot.isDragging
-                                                        ? "scale-105 opacity-70 shadow-lg rounded-3xl transition-all duration-200"
-                                                        : ""
-                                                }
-                                            >
-                                                <div className="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
-                                                    <div className="w-full aspect-square overflow-hidden rounded-3xl relative">
-                                                        <img
-                                                            className="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
-                                                            src={imageUrl}
-                                                            alt={
-                                                                item.alt_text ||
-                                                                item.title
-                                                            }
-                                                            loading="lazy"
-                                                            decoding="async"
-                                                        />
-                                                    </div>
-                                                    <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700 min-h-[3em] max-h-[3em] flex items-center justify-center leading-snug line-clamp-2">
-                                                        {nl2br(item.title)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                );
-                            })
-                        )}
-                        {provided.placeholder}
-                    </div>
-                )}
-            </Droppable>
-        </section>
     );
 }
 
