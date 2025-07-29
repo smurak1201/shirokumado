@@ -171,23 +171,28 @@ function App() {
     };
 
     return (
-        <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
+        <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8 min-h-[900px]">
             {/* タブUI */}
-            <div className="flex justify-center mb-6">
-                {["配置登録", "登録内容変更", "新規追加"].map((label, idx) => (
-                    <button
-                        key={label}
-                        type="button"
-                        className={`px-6 py-2 text-sm font-semibold border-b-2 transition-colors duration-150 focus:outline-none ${
-                            activeTab === idx
-                                ? "border-blue-500 text-blue-600"
-                                : "border-transparent text-gray-500 hover:text-blue-500"
-                        }`}
-                        onClick={() => setActiveTab(idx)}
-                    >
-                        {label}
-                    </button>
-                ))}
+            <div className="flex justify-center">
+                <div className="flex">
+                    {["配置登録", "設定", "追加"].map((label, idx) => (
+                        <button
+                            key={label}
+                            type="button"
+                            className={`w-32 px-6 py-2 text-sm font-semibold mx-1 focus:outline-none transition-all duration-150 border-b-2
+                                ${
+                                    activeTab === idx
+                                        ? "text-blue-600 border-blue-600"
+                                        : "text-gray-500 border-transparent"
+                                }
+                            `}
+                            style={{ background: "none" }}
+                            onClick={() => setActiveTab(idx)}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* タブごとの画面 */}
@@ -236,7 +241,7 @@ function App() {
             {activeTab === 1 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                     <h2 className="text-lg font-bold mb-4 text-gray-700">
-                        登録内容変更（画像編集）
+                        設定（画像編集）
                     </h2>
                     <p className="mb-2 text-sm text-gray-500">
                         画像のタイトルやタグなどを編集できます（仮UI）。
@@ -250,7 +255,7 @@ function App() {
             {activeTab === 2 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                     <h2 className="text-lg font-bold mb-4 text-gray-700">
-                        新規画像追加
+                        追加
                     </h2>
                     <p className="mb-2 text-sm text-gray-500">
                         新しい画像を登録できます（仮UI）。
