@@ -1,32 +1,4 @@
-// ...state宣言...
-
-// 並び替えボタン用: id昇順/降順でstateを更新
-const handleLimitedSort = () => {
-    if (limitedAsc) {
-        setLimitedMenu([...limitedMenu].sort((a, b) => b.id - a.id));
-    } else {
-        setLimitedMenu([...limitedMenu].sort((a, b) => a.id - b.id));
-    }
-    setLimitedAsc((v) => !v);
-};
-const handleNormalSort = () => {
-    if (normalAsc) {
-        setNormalMenu([...normalMenu].sort((a, b) => b.id - a.id));
-    } else {
-        setNormalMenu([...normalMenu].sort((a, b) => a.id - b.id));
-    }
-    setNormalAsc((v) => !v);
-};
-const handleSideSort = () => {
-    if (sideAsc) {
-        setSideMenu([...sideMenu].sort((a, b) => b.id - a.id));
-    } else {
-        setSideMenu([...sideMenu].sort((a, b) => a.id - b.id));
-    }
-    setSideAsc((v) => !v);
-};
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MenuSection from "./MenuSection";
 
 function App() {
@@ -43,8 +15,6 @@ function App() {
     // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
     const [activeTab, setActiveTab] = useState<number>(0);
     const apiOrigin = import.meta.env.VITE_API_ORIGIN;
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>("");
 
     // 並び替え用state（各カテゴリごと）
     const [limitedMenu, setLimitedMenu] = useState<ImageItem[]>([]);
@@ -54,6 +24,32 @@ function App() {
     const [limitedAsc, setLimitedAsc] = useState<boolean>(true);
     const [normalAsc, setNormalAsc] = useState<boolean>(true);
     const [sideAsc, setSideAsc] = useState<boolean>(true);
+
+    // 並び替えボタン用: id昇順/降順でstateを更新
+    const handleLimitedSort = () => {
+        if (limitedAsc) {
+            setLimitedMenu([...limitedMenu].sort((a, b) => b.id - a.id));
+        } else {
+            setLimitedMenu([...limitedMenu].sort((a, b) => a.id - b.id));
+        }
+        setLimitedAsc((v) => !v);
+    };
+    const handleNormalSort = () => {
+        if (normalAsc) {
+            setNormalMenu([...normalMenu].sort((a, b) => b.id - a.id));
+        } else {
+            setNormalMenu([...normalMenu].sort((a, b) => a.id - b.id));
+        }
+        setNormalAsc((v) => !v);
+    };
+    const handleSideSort = () => {
+        if (sideAsc) {
+            setSideMenu([...sideMenu].sort((a, b) => b.id - a.id));
+        } else {
+            setSideMenu([...sideMenu].sort((a, b) => a.id - b.id));
+        }
+        setSideAsc((v) => !v);
+    };
 
     // 並び順をDBに登録する関数
     const updateDisplayOrder = async (
@@ -110,36 +106,13 @@ function App() {
                             img.category_name === "サイドメニュー"
                     )
                 );
-                setLoading(false);
             })
             .catch(() => {
-                setError("データの取得に失敗しました");
-                setLoading(false);
+                // データ取得失敗時の処理（必要ならUI追加）
             });
     }, [apiOrigin]);
 
-    // ドラッグ終了時の処理（リストDnD用、シンプル版）
-    const onDragEnd = (result: any) => {
-        if (!result.destination) return;
-        const { source, destination } = result;
-        let items: ImageItem[] = [];
-        let setItems: React.Dispatch<React.SetStateAction<ImageItem[]>>;
-        if (source.droppableId === "limitedMenu") {
-            items = Array.from(limitedMenu);
-            setItems = setLimitedMenu;
-        } else if (source.droppableId === "normalMenu") {
-            items = Array.from(normalMenu);
-            setItems = setNormalMenu;
-        } else if (source.droppableId === "sideMenu") {
-            items = Array.from(sideMenu);
-            setItems = setSideMenu;
-        } else {
-            return;
-        }
-        const [removed] = items.splice(source.index, 1);
-        items.splice(destination.index, 0, removed);
-        setItems(items);
-    };
+    // ...existing code...
 
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8 min-h-[900px]">
