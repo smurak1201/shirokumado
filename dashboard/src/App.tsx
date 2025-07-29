@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 // BladeのsortByロジックを再現
 function sortMenu(items: ImageItem[]) {
     return [...items].sort((a, b) => {
@@ -14,7 +15,6 @@ function sortMenu(items: ImageItem[]) {
         return a.id - b.id;
     });
 }
-import React, { useEffect, useState } from "react";
 
 type ImageItem = {
     id: number;
@@ -30,6 +30,8 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 
 function App() {
+    // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
+    const [activeTab, setActiveTab] = useState(0);
     const apiOrigin = import.meta.env.VITE_API_ORIGIN;
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -134,9 +136,13 @@ function App() {
         setItems(items);
     };
 
-    if (loading) return <div className="text-center py-8">読み込み中...</div>;
-    if (error)
+    // 早期リターンはHooksの後で
+    if (loading) {
+        return <div className="text-center py-8">読み込み中...</div>;
+    }
+    if (error) {
         return <div className="text-center py-8 text-red-500">{error}</div>;
+    }
 
     // 並び替えボタン用: id昇順/降順でstateを更新
     const handleLimitedSort = () => {
@@ -166,46 +172,95 @@ function App() {
 
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
-            <DragDropContext onDragEnd={onDragEnd}>
-                <div className="grid grid-cols-3 gap-6 w-full">
-                    <MenuSection
-                        title="限定メニュー"
-                        items={limitedMenu}
-                        apiOrigin={apiOrigin}
-                        droppableId="limitedMenu"
-                        droppableType="limited"
-                        sortAsc={limitedAsc}
-                        onToggleSort={handleLimitedSort}
-                        onRegisterOrder={async () =>
-                            await updateDisplayOrder("limitedMenu")
-                        }
-                    />
-                    <MenuSection
-                        title="通常メニュー"
-                        items={normalMenu}
-                        apiOrigin={apiOrigin}
-                        droppableId="normalMenu"
-                        droppableType="normal"
-                        sortAsc={normalAsc}
-                        onToggleSort={handleNormalSort}
-                        onRegisterOrder={async () =>
-                            await updateDisplayOrder("normalMenu")
-                        }
-                    />
-                    <MenuSection
-                        title="サイドメニュー"
-                        items={sideMenu}
-                        apiOrigin={apiOrigin}
-                        droppableId="sideMenu"
-                        droppableType="side"
-                        sortAsc={sideAsc}
-                        onToggleSort={handleSideSort}
-                        onRegisterOrder={async () =>
-                            await updateDisplayOrder("sideMenu")
-                        }
-                    />
+            {/* タブUI */}
+            <div className="flex justify-center mb-6">
+                {["配置登録", "登録内容変更", "新規追加"].map((label, idx) => (
+                    <button
+                        key={label}
+                        type="button"
+                        className={`px-6 py-2 text-sm font-semibold border-b-2 transition-colors duration-150 focus:outline-none ${
+                            activeTab === idx
+                                ? "border-blue-500 text-blue-600"
+                                : "border-transparent text-gray-500 hover:text-blue-500"
+                        }`}
+                        onClick={() => setActiveTab(idx)}
+                    >
+                        {label}
+                    </button>
+                ))}
+            </div>
+
+            {/* タブごとの画面 */}
+            {activeTab === 0 && (
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <div className="grid grid-cols-3 gap-6 w-full">
+                        <MenuSection
+                            title="限定メニュー"
+                            items={limitedMenu}
+                            apiOrigin={apiOrigin}
+                            droppableId="limitedMenu"
+                            droppableType="limited"
+                            sortAsc={limitedAsc}
+                            onToggleSort={handleLimitedSort}
+                            onRegisterOrder={async () =>
+                                await updateDisplayOrder("limitedMenu")
+                            }
+                        />
+                        <MenuSection
+                            title="通常メニュー"
+                            items={normalMenu}
+                            apiOrigin={apiOrigin}
+                            droppableId="normalMenu"
+                            droppableType="normal"
+                            sortAsc={normalAsc}
+                            onToggleSort={handleNormalSort}
+                            onRegisterOrder={async () =>
+                                await updateDisplayOrder("normalMenu")
+                            }
+                        />
+                        <MenuSection
+                            title="サイドメニュー"
+                            items={sideMenu}
+                            apiOrigin={apiOrigin}
+                            droppableId="sideMenu"
+                            droppableType="side"
+                            sortAsc={sideAsc}
+                            onToggleSort={handleSideSort}
+                            onRegisterOrder={async () =>
+                                await updateDisplayOrder("sideMenu")
+                            }
+                        />
+                    </div>
+                </DragDropContext>
+            )}
+            {activeTab === 1 && (
+                <div className="bg-white rounded-3xl p-6 shadow-sm">
+                    <h2 className="text-lg font-bold mb-4 text-gray-700">
+                        登録内容変更（画像編集）
+                    </h2>
+                    <p className="mb-2 text-sm text-gray-500">
+                        画像のタイトルやタグなどを編集できます（仮UI）。
+                    </p>
+                    {/* ここに編集フォームやリストを追加 */}
+                    <div className="text-gray-400 text-sm">
+                        ※この画面のUIは今後拡張可能です
+                    </div>
                 </div>
-            </DragDropContext>
+            )}
+            {activeTab === 2 && (
+                <div className="bg-white rounded-3xl p-6 shadow-sm">
+                    <h2 className="text-lg font-bold mb-4 text-gray-700">
+                        新規画像追加
+                    </h2>
+                    <p className="mb-2 text-sm text-gray-500">
+                        新しい画像を登録できます（仮UI）。
+                    </p>
+                    {/* ここに新規追加フォームを追加 */}
+                    <div className="text-gray-400 text-sm">
+                        ※この画面のUIは今後拡張可能です
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
