@@ -1,5 +1,4 @@
 // BladeのsortByロジックを再現
-// BladeのsortByロジックを再現
 function sortMenu(items: ImageItem[]) {
     return [...items].sort((a, b) => {
         // display_orderがnullは後ろ
