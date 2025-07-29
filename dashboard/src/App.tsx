@@ -174,6 +174,7 @@ function App() {
                         items={limitedMenu}
                         apiOrigin={apiOrigin}
                         droppableId="limitedMenu"
+                        droppableType="limited"
                         sortAsc={limitedAsc}
                         onToggleSort={handleLimitedSort}
                         onRegisterOrder={async () =>
@@ -185,6 +186,7 @@ function App() {
                         items={normalMenu}
                         apiOrigin={apiOrigin}
                         droppableId="normalMenu"
+                        droppableType="normal"
                         sortAsc={normalAsc}
                         onToggleSort={handleNormalSort}
                         onRegisterOrder={async () =>
@@ -196,6 +198,7 @@ function App() {
                         items={sideMenu}
                         apiOrigin={apiOrigin}
                         droppableId="sideMenu"
+                        droppableType="side"
                         sortAsc={sideAsc}
                         onToggleSort={handleSideSort}
                         onRegisterOrder={async () =>
@@ -217,6 +220,7 @@ type MenuSectionProps = {
     sortAsc?: boolean;
     onToggleSort?: () => void;
     onRegisterOrder?: () => void;
+    droppableType?: string;
 };
 
 function MenuSection({
@@ -225,6 +229,7 @@ function MenuSection({
     apiOrigin,
     droppableId,
     sectionClass = "",
+    droppableType = "",
     sortAsc,
     onToggleSort,
     onRegisterOrder,
@@ -268,10 +273,14 @@ function MenuSection({
                     </button>
                 )}
             </div>
-            <Droppable droppableId={droppableId} direction="vertical">
+            <Droppable
+                droppableId={droppableId}
+                direction="vertical"
+                type={droppableType}
+            >
                 {(provided) => (
                     <div
-                        className="flex flex-col gap-4 mt-6 min-h-[320px]"
+                        className="flex flex-col gap-4 mt-6 min-h-[320px] bg-white transition-colors duration-200"
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >
@@ -295,7 +304,7 @@ function MenuSection({
                                                 {...provided.dragHandleProps}
                                                 className={
                                                     snapshot.isDragging
-                                                        ? "ring-2 ring-blue-400"
+                                                        ? "scale-105 opacity-70 shadow-lg rounded-3xl transition-all duration-200"
                                                         : ""
                                                 }
                                             >
