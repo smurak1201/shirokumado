@@ -38,6 +38,10 @@ function App() {
     const [limitedMenu, setLimitedMenu] = useState<ImageItem[]>([]);
     const [normalMenu, setNormalMenu] = useState<ImageItem[]>([]);
     const [sideMenu, setSideMenu] = useState<ImageItem[]>([]);
+    // 並び順トグルstate（true: id昇順, false: id降順）
+    const [limitedAsc, setLimitedAsc] = useState(true);
+    const [normalAsc, setNormalAsc] = useState(true);
+    const [sideAsc, setSideAsc] = useState(true);
 
     useEffect(() => {
         fetch(`${apiOrigin}/api/images`)
@@ -109,21 +113,39 @@ function App() {
                 <div className="grid grid-cols-3 gap-6 w-full">
                     <MenuSection
                         title="限定メニュー"
-                        items={limitedMenu}
+                        items={
+                            limitedAsc
+                                ? [...limitedMenu].sort((a, b) => a.id - b.id)
+                                : [...limitedMenu].sort((a, b) => b.id - a.id)
+                        }
                         apiOrigin={apiOrigin}
                         droppableId="limitedMenu"
+                        sortAsc={limitedAsc}
+                        onToggleSort={() => setLimitedAsc((v) => !v)}
                     />
                     <MenuSection
                         title="通常メニュー"
-                        items={normalMenu}
+                        items={
+                            normalAsc
+                                ? [...normalMenu].sort((a, b) => a.id - b.id)
+                                : [...normalMenu].sort((a, b) => b.id - a.id)
+                        }
                         apiOrigin={apiOrigin}
                         droppableId="normalMenu"
+                        sortAsc={normalAsc}
+                        onToggleSort={() => setNormalAsc((v) => !v)}
                     />
                     <MenuSection
                         title="サイドメニュー"
-                        items={sideMenu}
+                        items={
+                            sideAsc
+                                ? [...sideMenu].sort((a, b) => a.id - b.id)
+                                : [...sideMenu].sort((a, b) => b.id - a.id)
+                        }
                         apiOrigin={apiOrigin}
                         droppableId="sideMenu"
+                        sortAsc={sideAsc}
+                        onToggleSort={() => setSideAsc((v) => !v)}
                     />
                 </div>
             </DragDropContext>
@@ -137,6 +159,8 @@ type MenuSectionProps = {
     apiOrigin: string;
     droppableId: string;
     sectionClass?: string;
+    sortAsc?: boolean;
+    onToggleSort?: () => void;
 };
 
 function MenuSection({
@@ -145,6 +169,8 @@ function MenuSection({
     apiOrigin,
     droppableId,
     sectionClass = "",
+    sortAsc,
+    onToggleSort,
 }: MenuSectionProps) {
     // 管理画面ではitemsが空でも必ずセクションを表示
     function nl2br(str: string) {
@@ -162,9 +188,20 @@ function MenuSection({
     // リスト型DnD: 1カラム縦並び
     return (
         <section className={`flex-1 min-w-0 ${sectionClass}`}>
-            <h2 className="text-lg font-bold text-gray-700 mt-8 mb-4 text-center">
-                {title}
-            </h2>
+            <div className="flex flex-col items-center mt-8 mb-4">
+                <h2 className="text-lg font-bold text-gray-700 text-center mb-2">
+                    {title}
+                </h2>
+                {onToggleSort && typeof sortAsc === "boolean" && (
+                    <button
+                        type="button"
+                        className="text-xs px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 mb-1"
+                        onClick={onToggleSort}
+                    >
+                        IDで{sortAsc ? "降順" : "昇順"}に並び替え
+                    </button>
+                )}
+            </div>
             <Droppable droppableId={droppableId} direction="vertical">
                 {(provided) => (
                     <div
