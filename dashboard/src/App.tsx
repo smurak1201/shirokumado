@@ -1,7 +1,30 @@
 import { useEffect, useState } from "react";
+import { DragDropContext } from "@hello-pangea/dnd";
 import MenuSection from "./MenuSection";
 
 function App() {
+    // DnD終了時の並び替え処理
+    const onDragEnd = (result: any) => {
+        if (!result.destination) return;
+        const { source, destination } = result;
+        let items: ImageItem[] = [];
+        let setItems: React.Dispatch<React.SetStateAction<ImageItem[]>>;
+        if (source.droppableId === "limitedMenu") {
+            items = Array.from(limitedMenu);
+            setItems = setLimitedMenu;
+        } else if (source.droppableId === "normalMenu") {
+            items = Array.from(normalMenu);
+            setItems = setNormalMenu;
+        } else if (source.droppableId === "sideMenu") {
+            items = Array.from(sideMenu);
+            setItems = setSideMenu;
+        } else {
+            return;
+        }
+        const [removed] = items.splice(source.index, 1);
+        items.splice(destination.index, 0, removed);
+        setItems(items);
+    };
     type ImageItem = {
         id: number;
         title: string;
@@ -141,45 +164,46 @@ function App() {
 
             {/* タブごとの画面 */}
             {activeTab === 0 && (
-                <div>
-                    {/* DragDropContextはMenuSection.tsxで利用 */}
-                    <MenuSection
-                        title="限定メニュー"
-                        items={limitedMenu}
-                        apiOrigin={apiOrigin}
-                        droppableId="limitedMenu"
-                        droppableType="limited"
-                        sortAsc={limitedAsc}
-                        onToggleSort={handleLimitedSort}
-                        onRegisterOrder={async () =>
-                            await updateDisplayOrder("limitedMenu")
-                        }
-                    />
-                    <MenuSection
-                        title="通常メニュー"
-                        items={normalMenu}
-                        apiOrigin={apiOrigin}
-                        droppableId="normalMenu"
-                        droppableType="normal"
-                        sortAsc={normalAsc}
-                        onToggleSort={handleNormalSort}
-                        onRegisterOrder={async () =>
-                            await updateDisplayOrder("normalMenu")
-                        }
-                    />
-                    <MenuSection
-                        title="サイドメニュー"
-                        items={sideMenu}
-                        apiOrigin={apiOrigin}
-                        droppableId="sideMenu"
-                        droppableType="side"
-                        sortAsc={sideAsc}
-                        onToggleSort={handleSideSort}
-                        onRegisterOrder={async () =>
-                            await updateDisplayOrder("sideMenu")
-                        }
-                    />
-                </div>
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <div className="flex flex-row gap-4">
+                        <MenuSection
+                            title="限定メニュー"
+                            items={limitedMenu}
+                            apiOrigin={apiOrigin}
+                            droppableId="limitedMenu"
+                            droppableType="limited"
+                            sortAsc={limitedAsc}
+                            onToggleSort={handleLimitedSort}
+                            onRegisterOrder={async () =>
+                                await updateDisplayOrder("limitedMenu")
+                            }
+                        />
+                        <MenuSection
+                            title="通常メニュー"
+                            items={normalMenu}
+                            apiOrigin={apiOrigin}
+                            droppableId="normalMenu"
+                            droppableType="normal"
+                            sortAsc={normalAsc}
+                            onToggleSort={handleNormalSort}
+                            onRegisterOrder={async () =>
+                                await updateDisplayOrder("normalMenu")
+                            }
+                        />
+                        <MenuSection
+                            title="サイドメニュー"
+                            items={sideMenu}
+                            apiOrigin={apiOrigin}
+                            droppableId="sideMenu"
+                            droppableType="side"
+                            sortAsc={sideAsc}
+                            onToggleSort={handleSideSort}
+                            onRegisterOrder={async () =>
+                                await updateDisplayOrder("sideMenu")
+                            }
+                        />
+                    </div>
+                </DragDropContext>
             )}
             {activeTab === 1 && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
