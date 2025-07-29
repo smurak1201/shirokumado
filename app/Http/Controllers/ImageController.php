@@ -47,4 +47,32 @@ class ImageController extends Controller
             ->get();
         return response()->json($images);
     }
+    // 画像情報＋タグ編集API
+    public function update(Request $request, $id)
+    {
+        $image = Image::findOrFail($id);
+
+        // 画像情報の更新
+        $image->fill($request->only([
+            'title',
+            'price_s',
+            'price_l',
+            'price_other',
+            'caption',
+            'category_id',
+            'display_order',
+            'is_public',
+            'start_at',
+            'end_at'
+        ]));
+        $image->save();
+
+        // タグの更新（tags: [1,2,3] 形式で送信）
+        if ($request->has('tags')) {
+            $image->tags()->sync($request->input('tags'));
+        }
+
+        // 編集後の画像＋タグ情報を返す
+        return response()->json($image->load('tags'));
+    }
 }
