@@ -1,8 +1,76 @@
 import { useEffect, useState } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import MenuSection from "./MenuSection";
+import ImageEditSection, {
+    ImageItem as EditImageItem,
+    Tag as EditTag,
+} from "./components/ImageEditSection";
 
 function App() {
+    // 設定画面用: 編集フォームのローカルstate
+    const [editImages, setEditImages] = useState<ImageItem[]>([]);
+    const [editLoading, setEditLoading] = useState(false);
+    const [editError, setEditError] = useState("");
+    // 仮のタグ一覧（APIで取得する場合はuseEffectで取得）
+    const [tagList, setTagList] = useState([
+        { id: 1, name: "かき氷" },
+        { id: 2, name: "ドリンク" },
+        { id: 3, name: "フード" },
+    ]);
+
+    // 設定タブ表示時に画像データをセット
+    useEffect(() => {
+        if (activeTab === 1) {
+            setEditImages([...limitedMenu, ...normalMenu, ...sideMenu]);
+        }
+    }, [activeTab, limitedMenu, normalMenu, sideMenu]);
+
+    // 編集フォームの値変更
+    const handleEditChange = (
+        idx: number,
+        key: keyof ImageItem,
+        value: any
+    ) => {
+        setEditImages((prev) => {
+            const next = [...prev];
+            next[idx] = { ...next[idx], [key]: value };
+            return next;
+        });
+    };
+
+    // タグ編集（tags: number[]）
+    const handleTagChange = (idx: number, tagId: number, checked: boolean) => {
+        setEditImages((prev) => {
+            const next = [...prev];
+            let tags = Array.isArray(next[idx].tags) ? next[idx].tags : [];
+            if (checked) {
+                tags = [...tags, tagId];
+            } else {
+                tags = tags.filter((id) => id !== tagId);
+            }
+            next[idx] = { ...next[idx], tags };
+            return next;
+        });
+    };
+
+    // 編集内容をAPIで保存
+    const handleEditSave = async (img: any, idx: number) => {
+        setEditLoading(true);
+        setEditError("");
+        try {
+            const res = await fetch(`${apiOrigin}/api/images/${img.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(img),
+            });
+            if (!res.ok) throw new Error("保存に失敗しました");
+            alert("保存しました");
+        } catch (e: any) {
+            setEditError(e.message || "保存に失敗しました");
+        } finally {
+            setEditLoading(false);
+        }
+    };
     // DnD終了時の並び替え処理
     const onDragEnd = (result: any) => {
         if (!result.destination) return;
@@ -33,6 +101,14 @@ function App() {
         alt_text?: string;
         tag_name?: string;
         category_name?: string;
+        caption?: string;
+        price_s?: number | null;
+        price_l?: number | null;
+        price_other?: number | null;
+        tags?: number[];
+        is_public?: boolean;
+        start_at?: string;
+        end_at?: string;
     };
 
     // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
@@ -211,12 +287,36 @@ function App() {
                         設定（画像編集）
                     </h2>
                     <p className="mb-2 text-sm text-gray-500">
-                        画像のタイトルやタグなどを編集できます（仮UI）。
+                        画像のタイトルやタグなどを編集できます。
                     </p>
-                    {/* ここに編集フォームやリストを追加 */}
-                    <div className="text-gray-400 text-sm">
-                        ※この画面のUIは今後拡張可能です
-                    </div>
+                    <ImageEditSection
+                        apiOrigin={apiOrigin}
+                        images={editImages}
+                        tagList={tagList}
+                        onSave={async (img) => {
+                            setEditLoading(true);
+                            setEditError("");
+                            try {
+                                const res = await fetch(
+                                    `${apiOrigin}/api/images/${img.id}`,
+                                    {
+                                        method: "PATCH",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify(img),
+                                    }
+                                );
+                                if (!res.ok)
+                                    throw new Error("保存に失敗しました");
+                                alert("保存しました");
+                            } catch (e: any) {
+                                setEditError(e.message || "保存に失敗しました");
+                            } finally {
+                                setEditLoading(false);
+                            }
+                        }}
+                    />
                 </div>
             )}
             {activeTab === 2 && (
