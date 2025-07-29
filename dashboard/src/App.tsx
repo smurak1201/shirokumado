@@ -198,7 +198,7 @@ function MenuSection({
                         className="text-xs px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 mb-1"
                         onClick={onToggleSort}
                     >
-                        IDで{sortAsc ? "降順" : "昇順"}に並び替え
+                        登録IDで{sortAsc ? "降順" : "昇順"}に並び替え
                     </button>
                 )}
             </div>
