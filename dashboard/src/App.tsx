@@ -1,4 +1,5 @@
 // BladeのsortByロジックを再現
+// BladeのsortByロジックを再現
 function sortMenu(items: ImageItem[]) {
     return [...items].sort((a, b) => {
         // display_orderがnullは後ろ
@@ -43,6 +44,37 @@ function App() {
     const [normalAsc, setNormalAsc] = useState(true);
     const [sideAsc, setSideAsc] = useState(true);
 
+    // 並び順をDBに登録する関数
+    const updateDisplayOrder = async (
+        menuType: "limitedMenu" | "normalMenu" | "sideMenu"
+    ) => {
+        let items: ImageItem[] = [];
+        if (menuType === "limitedMenu") {
+            items = limitedMenu;
+        } else if (menuType === "normalMenu") {
+            items = normalMenu;
+        } else if (menuType === "sideMenu") {
+            items = sideMenu;
+        }
+        // display_orderを付与
+        const payload = items.map((item, idx) => ({
+            id: item.id,
+            display_order: idx + 1,
+        }));
+        try {
+            const res = await fetch(`${apiOrigin}/api/images/display-order`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ orders: payload }),
+            });
+            if (!res.ok) throw new Error("DB更新に失敗しました");
+            // 成功時のフィードバックは必要に応じて追加
+        } catch (e) {
+            alert("DB更新に失敗しました");
+        }
+    };
     useEffect(() => {
         fetch(`${apiOrigin}/api/images`)
             .then((res) => {
@@ -122,6 +154,9 @@ function App() {
                         droppableId="limitedMenu"
                         sortAsc={limitedAsc}
                         onToggleSort={() => setLimitedAsc((v) => !v)}
+                        onRegisterOrder={async () =>
+                            await updateDisplayOrder("limitedMenu")
+                        }
                     />
                     <MenuSection
                         title="通常メニュー"
@@ -134,6 +169,9 @@ function App() {
                         droppableId="normalMenu"
                         sortAsc={normalAsc}
                         onToggleSort={() => setNormalAsc((v) => !v)}
+                        onRegisterOrder={async () =>
+                            await updateDisplayOrder("normalMenu")
+                        }
                     />
                     <MenuSection
                         title="サイドメニュー"
@@ -146,6 +184,9 @@ function App() {
                         droppableId="sideMenu"
                         sortAsc={sideAsc}
                         onToggleSort={() => setSideAsc((v) => !v)}
+                        onRegisterOrder={async () =>
+                            await updateDisplayOrder("sideMenu")
+                        }
                     />
                 </div>
             </DragDropContext>
@@ -161,6 +202,7 @@ type MenuSectionProps = {
     sectionClass?: string;
     sortAsc?: boolean;
     onToggleSort?: () => void;
+    onRegisterOrder?: () => void;
 };
 
 function MenuSection({
@@ -171,6 +213,7 @@ function MenuSection({
     sectionClass = "",
     sortAsc,
     onToggleSort,
+    onRegisterOrder,
 }: MenuSectionProps) {
     // 管理画面ではitemsが空でも必ずセクションを表示
     function nl2br(str: string) {
@@ -199,6 +242,15 @@ function MenuSection({
                         onClick={onToggleSort}
                     >
                         登録IDで{sortAsc ? "降順" : "昇順"}に並び替え
+                    </button>
+                )}
+                {onRegisterOrder && (
+                    <button
+                        type="button"
+                        className="text-xs px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white mt-1"
+                        onClick={onRegisterOrder}
+                    >
+                        DBに登録
                     </button>
                 )}
             </div>
