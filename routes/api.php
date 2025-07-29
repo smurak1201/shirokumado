@@ -6,3 +6,4 @@ use App\Http\Controllers\ImageController;
 
 Route::get('images', [ImageController::class, 'index']);
 Route::post('images/display-order', [ImageController::class, 'updateDisplayOrder']);
+Route::patch('images/{id}', [ImageController::class, 'update']);
