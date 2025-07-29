@@ -76,6 +76,7 @@ function App() {
             alert("DB更新に失敗しました");
         }
     };
+
     useEffect(() => {
         fetch(`${apiOrigin}/api/images`)
             .then((res) => {
@@ -282,17 +283,18 @@ type MenuSectionProps = {
     droppableType?: string;
 };
 
-function MenuSection({
-    title,
-    items,
-    apiOrigin,
-    droppableId,
-    sectionClass = "",
-    droppableType = "",
-    sortAsc,
-    onToggleSort,
-    onRegisterOrder,
-}: MenuSectionProps) {
+function MenuSection(props: MenuSectionProps) {
+    const {
+        title,
+        items,
+        apiOrigin,
+        droppableId,
+        sectionClass = "",
+        droppableType = "",
+        sortAsc,
+        onToggleSort,
+        onRegisterOrder,
+    } = props;
     // 管理画面ではitemsが空でも必ずセクションを表示
     function nl2br(str: string) {
         return str.split(/\r?\n/).map((line, idx, arr) =>
@@ -305,14 +307,6 @@ function MenuSection({
                 <React.Fragment key={idx}>{line}</React.Fragment>
             )
         );
-    }
-    // 画像のローディング状態管理
-    const [loadedImages, setLoadedImages] = React.useState<{
-        [id: number]: boolean;
-    }>({});
-
-    function handleImageLoad(id: number) {
-        setLoadedImages((prev) => ({ ...prev, [id]: true }));
     }
 
     return (
@@ -377,11 +371,6 @@ function MenuSection({
                                             >
                                                 <div className="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                                                     <div className="w-full aspect-square overflow-hidden rounded-3xl relative">
-                                                        {!loadedImages[
-                                                            item.id
-                                                        ] && (
-                                                            <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-3xl" />
-                                                        )}
                                                         <img
                                                             className="w-full h-full object-cover rounded-3xl transition-transform duration-200 hover:scale-105"
                                                             src={imageUrl}
@@ -391,19 +380,6 @@ function MenuSection({
                                                             }
                                                             loading="lazy"
                                                             decoding="async"
-                                                            onLoad={() =>
-                                                                handleImageLoad(
-                                                                    item.id
-                                                                )
-                                                            }
-                                                            style={{
-                                                                display:
-                                                                    loadedImages[
-                                                                        item.id
-                                                                    ]
-                                                                        ? "block"
-                                                                        : "none",
-                                                            }}
                                                         />
                                                     </div>
                                                     <div className="w-full text-center font-semibold mt-2 px-2 py-1 break-words text-[clamp(0.75rem,2vw,1rem)] text-gray-700 min-h-[3em] max-h-[3em] flex items-center justify-center leading-snug line-clamp-2">
