@@ -16,8 +16,13 @@ class ImageController extends Controller
         }
         foreach ($orders as $order) {
             if (isset($order['id'], $order['display_order'])) {
-                \App\Models\Image::where('id', $order['id'])
+                $updated = \App\Models\Image::where('id', $order['id'])
                     ->update(['display_order' => $order['display_order']]);
+                \Log::info('Image update', [
+                    'id' => $order['id'],
+                    'display_order' => $order['display_order'],
+                    'updated' => $updated
+                ]);
             }
         }
         return response()->json(['status' => 'ok']);
@@ -38,6 +43,7 @@ class ImageController extends Controller
             ->where('images.is_public', true)
             ->select('images.*', 'tags.name as tag_name', 'categories.name as category_name')
             ->orderBy('images.display_order')
+            ->orderBy('images.id')
             ->get();
         return response()->json($images);
     }

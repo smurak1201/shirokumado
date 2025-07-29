@@ -139,51 +139,65 @@ function App() {
     if (error)
         return <div className="text-center py-8 text-red-500">{error}</div>;
 
+    // 並び替えボタン用: id昇順/降順でstateを更新
+    const handleLimitedSort = () => {
+        if (limitedAsc) {
+            setLimitedMenu([...limitedMenu].sort((a, b) => b.id - a.id));
+        } else {
+            setLimitedMenu([...limitedMenu].sort((a, b) => a.id - b.id));
+        }
+        setLimitedAsc((v) => !v);
+    };
+    const handleNormalSort = () => {
+        if (normalAsc) {
+            setNormalMenu([...normalMenu].sort((a, b) => b.id - a.id));
+        } else {
+            setNormalMenu([...normalMenu].sort((a, b) => a.id - b.id));
+        }
+        setNormalAsc((v) => !v);
+    };
+    const handleSideSort = () => {
+        if (sideAsc) {
+            setSideMenu([...sideMenu].sort((a, b) => b.id - a.id));
+        } else {
+            setSideMenu([...sideMenu].sort((a, b) => a.id - b.id));
+        }
+        setSideAsc((v) => !v);
+    };
+
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8">
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="grid grid-cols-3 gap-6 w-full">
                     <MenuSection
                         title="限定メニュー"
-                        items={
-                            limitedAsc
-                                ? [...limitedMenu].sort((a, b) => a.id - b.id)
-                                : [...limitedMenu].sort((a, b) => b.id - a.id)
-                        }
+                        items={limitedMenu}
                         apiOrigin={apiOrigin}
                         droppableId="limitedMenu"
                         sortAsc={limitedAsc}
-                        onToggleSort={() => setLimitedAsc((v) => !v)}
+                        onToggleSort={handleLimitedSort}
                         onRegisterOrder={async () =>
                             await updateDisplayOrder("limitedMenu")
                         }
                     />
                     <MenuSection
                         title="通常メニュー"
-                        items={
-                            normalAsc
-                                ? [...normalMenu].sort((a, b) => a.id - b.id)
-                                : [...normalMenu].sort((a, b) => b.id - a.id)
-                        }
+                        items={normalMenu}
                         apiOrigin={apiOrigin}
                         droppableId="normalMenu"
                         sortAsc={normalAsc}
-                        onToggleSort={() => setNormalAsc((v) => !v)}
+                        onToggleSort={handleNormalSort}
                         onRegisterOrder={async () =>
                             await updateDisplayOrder("normalMenu")
                         }
                     />
                     <MenuSection
                         title="サイドメニュー"
-                        items={
-                            sideAsc
-                                ? [...sideMenu].sort((a, b) => a.id - b.id)
-                                : [...sideMenu].sort((a, b) => b.id - a.id)
-                        }
+                        items={sideMenu}
                         apiOrigin={apiOrigin}
                         droppableId="sideMenu"
                         sortAsc={sideAsc}
-                        onToggleSort={() => setSideAsc((v) => !v)}
+                        onToggleSort={handleSideSort}
                         onRegisterOrder={async () =>
                             await updateDisplayOrder("sideMenu")
                         }
