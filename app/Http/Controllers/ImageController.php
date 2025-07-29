@@ -7,6 +7,21 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+    // 並び順更新API
+    public function updateDisplayOrder(Request $request)
+    {
+        $orders = $request->input('orders');
+        if (!is_array($orders)) {
+            return response()->json(['error' => 'Invalid payload'], 400);
+        }
+        foreach ($orders as $order) {
+            if (isset($order['id'], $order['display_order'])) {
+                \App\Models\Image::where('id', $order['id'])
+                    ->update(['display_order' => $order['display_order']]);
+            }
+        }
+        return response()->json(['status' => 'ok']);
+    }
     public function show($id)
     {
         $image = Image::findOrFail($id);
