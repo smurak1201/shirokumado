@@ -70,7 +70,7 @@ function App() {
                 body: JSON.stringify({ orders: payload }),
             });
             if (!res.ok) throw new Error("DB更新に失敗しました");
-            // 成功時のフィードバックは必要に応じて追加
+            alert("並び順を保存しました");
         } catch (e) {
             alert("DB更新に失敗しました");
         }
