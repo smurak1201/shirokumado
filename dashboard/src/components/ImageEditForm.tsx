@@ -66,7 +66,9 @@ const ImageEditForm: React.FC<Props> = ({
                                     ? Math.floor(img.price_s)
                                     : ""
                             }
-                            onChange={(e) =>
+                            onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) =>
                                 onChange(idx, {
                                     ...img,
                                     price_s:
@@ -92,7 +94,9 @@ const ImageEditForm: React.FC<Props> = ({
                                     ? Math.floor(img.price_l)
                                     : ""
                             }
-                            onChange={(e) =>
+                            onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) =>
                                 onChange(idx, {
                                     ...img,
                                     price_l:
@@ -118,7 +122,9 @@ const ImageEditForm: React.FC<Props> = ({
                                     ? Math.floor(img.price_other)
                                     : ""
                             }
-                            onChange={(e) =>
+                            onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) =>
                                 onChange(idx, {
                                     ...img,
                                     price_other:
@@ -206,32 +212,66 @@ const ImageEditForm: React.FC<Props> = ({
                     {/* start_at */}
                     <label className="text-xs text-gray-500">
                         公開開始日時
-                        <input
-                            type="datetime-local"
-                            className="w-full px-2 py-1 border rounded"
-                            value={img.start_at ?? ""}
-                            onChange={(e) =>
-                                onChange(idx, {
-                                    ...img,
-                                    start_at: e.target.value,
-                                })
-                            }
-                        />
+                        <div className="flex gap-2 items-center">
+                            <input
+                                type="datetime-local"
+                                className="w-full px-2 py-1 border rounded"
+                                value={img.start_at ?? ""}
+                                onChange={(e) =>
+                                    onChange(idx, {
+                                        ...img,
+                                        start_at: e.target.value,
+                                    })
+                                }
+                            />
+                            {img.start_at && (
+                                <button
+                                    type="button"
+                                    className="text-gray-400 hover:text-gray-700 px-2"
+                                    onClick={() =>
+                                        onChange(idx, {
+                                            ...img,
+                                            start_at: "",
+                                        })
+                                    }
+                                    aria-label="公開開始日時クリア"
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
                     </label>
                     {/* end_at */}
                     <label className="text-xs text-gray-500">
                         公開終了日時
-                        <input
-                            type="datetime-local"
-                            className="w-full px-2 py-1 border rounded"
-                            value={img.end_at ?? ""}
-                            onChange={(e) =>
-                                onChange(idx, {
-                                    ...img,
-                                    end_at: e.target.value,
-                                })
-                            }
-                        />
+                        <div className="flex gap-2 items-center">
+                            <input
+                                type="datetime-local"
+                                className="w-full px-2 py-1 border rounded"
+                                value={img.end_at ?? ""}
+                                onChange={(e) =>
+                                    onChange(idx, {
+                                        ...img,
+                                        end_at: e.target.value,
+                                    })
+                                }
+                            />
+                            {img.end_at && (
+                                <button
+                                    type="button"
+                                    className="text-gray-400 hover:text-gray-700 px-2"
+                                    onClick={() =>
+                                        onChange(idx, {
+                                            ...img,
+                                            end_at: "",
+                                        })
+                                    }
+                                    aria-label="公開終了日時クリア"
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
                     </label>
                     {/* タグ複数選択 */}
                     <label className="text-xs text-gray-500">
