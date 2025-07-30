@@ -123,6 +123,7 @@ const ImageEditSection: React.FC<Props> = (props) => {
                     {filteredImages.map((img, idx) => (
                         <ImageEditForm
                             key={img.id}
+                            apiOrigin={apiOrigin}
                             img={img}
                             idx={idx}
                             categoryList={categoryList}

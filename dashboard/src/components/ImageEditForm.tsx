@@ -8,9 +8,11 @@ interface Props {
     tagList: Tag[];
     onChange: (idx: number, newImg: ImageItem) => void;
     onSave: (img: ImageItem) => void;
+    apiOrigin: string;
 }
 
 const ImageEditForm: React.FC<Props> = ({
+    apiOrigin,
     img,
     idx,
     categoryList,
@@ -28,7 +30,7 @@ const ImageEditForm: React.FC<Props> = ({
         <form className="border rounded-xl p-4 bg-gray-50">
             <div className="flex gap-4 items-center">
                 <img
-                    src={`/images/${img.file_path}`}
+                    src={`${apiOrigin}/images/${img.file_path}`}
                     alt={altText}
                     className="w-24 h-24 object-cover rounded-lg"
                 />
