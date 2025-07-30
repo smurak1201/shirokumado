@@ -108,7 +108,11 @@ const ImageEditSection: React.FC<Props> = (props) => {
 
     // category_idが厳密に存在する画像のみ表示（null/undefined/0/空文字除外）
     // 公開・非公開問わず、category_idが存在する画像はすべて表示
-    const filteredImages = editImages.filter((img) => !!img.category_id);
+    // category_idが存在し、かつ公開判定を通過した画像のみ表示
+    const filteredImages = editImages.filter(
+        // 設定画面では公開・非公開・公開開始/終了日時に関係なく、category_idが存在する画像はすべて表示
+        (img) => !!img.category_id
+    );
 
     return (
         <div className="flex flex-col gap-6">
@@ -123,7 +127,7 @@ const ImageEditSection: React.FC<Props> = (props) => {
                     <div className="pb-6">
                         {filteredImages.map((img, idx) => (
                             <ImageEditForm
-                                key={img.id}
+                                key={img.id + "_" + idx}
                                 apiOrigin={apiOrigin}
                                 img={img}
                                 idx={idx}

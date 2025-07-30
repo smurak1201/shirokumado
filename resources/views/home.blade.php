@@ -19,10 +19,22 @@
                 ->values()
             : collect();
     @endphp
-    @if ($limited->count())
+    @php
+        $now = now()->setTimezone('Asia/Tokyo');
+        $limitedVisible = $limited->filter(function ($image) use ($now) {
+            if (!empty($image->start_at) && $image->start_at > $now) {
+                return false;
+            }
+            if (!empty($image->end_at) && $image->end_at < $now) {
+                return false;
+            }
+            return (bool) $image->is_public;
+        });
+    @endphp
+    @if ($limitedVisible->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">限定メニュー</h2>
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($limited as $image)
+            @foreach ($limitedVisible as $image)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                     <a href="{{ route('images.show', $image->id) }}" class="w-full">
                         <div class="w-full aspect-square overflow-hidden">
@@ -50,10 +62,21 @@
                 ->values()
             : collect();
     @endphp
-    @if ($normal->count())
+    @php
+        $normalVisible = $normal->filter(function ($menu) use ($now) {
+            if (!empty($menu->start_at) && $menu->start_at > $now) {
+                return false;
+            }
+            if (!empty($menu->end_at) && $menu->end_at < $now) {
+                return false;
+            }
+            return (bool) $menu->is_public;
+        });
+    @endphp
+    @if ($normalVisible->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">通常メニュー</h2>
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($normal as $menu)
+            @foreach ($normalVisible as $menu)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                     <a href="{{ route('images.show', $menu->id) }}" class="w-full">
                         <div class="w-full aspect-square overflow-hidden">
@@ -81,10 +104,21 @@
                 ->values()
             : collect();
     @endphp
-    @if ($side->count())
+    @php
+        $sideVisible = $side->filter(function ($menu) use ($now) {
+            if (!empty($menu->start_at) && $menu->start_at > $now) {
+                return false;
+            }
+            if (!empty($menu->end_at) && $menu->end_at < $now) {
+                return false;
+            }
+            return (bool) $menu->is_public;
+        });
+    @endphp
+    @if ($sideVisible->count())
         <h2 class="text-lg font-bold text-gray-700 mt-12 mb-4 text-center">サイドメニュー</h2>
         <div class="grid grid-cols-3 items-stretch mt-6 gap-2">
-            @foreach ($side as $menu)
+            @foreach ($sideVisible as $menu)
                 <div class="bg-white overflow-hidden rounded-3xl flex flex-col items-center">
                     <a href="{{ route('images.show', $menu->id) }}" class="w-full">
                         <div class="w-full aspect-square overflow-hidden">
