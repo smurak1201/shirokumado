@@ -1,77 +1,49 @@
 import { useEffect, useState } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import MenuSection from "./MenuSection";
-import ImageEditSection, {
-    ImageItem as EditImageItem,
-    Tag as EditTag,
-} from "./components/ImageEditSection";
+import ImageEditSection from "./components/ImageEditSection";
+
+type ImageItem = {
+    id: number;
+    title: string;
+    file_path: string;
+    display_order?: number | null;
+    alt_text?: string;
+    tag_name?: string;
+    category_name?: string;
+    caption?: string;
+    price_s?: number | null;
+    price_l?: number | null;
+    price_other?: number | null;
+    tags?: number[];
+    is_public?: boolean;
+    start_at?: string;
+    end_at?: string;
+};
 
 function App() {
+    // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
+    const [activeTab, setActiveTab] = useState<number>(0);
+    const apiOrigin = import.meta.env.VITE_API_ORIGIN;
+
+    // 並び替え用state（各カテゴリごと）
+    const [limitedMenu, setLimitedMenu] = useState<ImageItem[]>([]);
+    const [normalMenu, setNormalMenu] = useState<ImageItem[]>([]);
+    const [sideMenu, setSideMenu] = useState<ImageItem[]>([]);
+    // 並び順トグルstate（true: id昇順, false: id降順）
+    const [limitedAsc, setLimitedAsc] = useState<boolean>(true);
+    const [normalAsc, setNormalAsc] = useState<boolean>(true);
+    const [sideAsc, setSideAsc] = useState<boolean>(true);
+
     // 設定画面用: 編集フォームのローカルstate
     const [editImages, setEditImages] = useState<ImageItem[]>([]);
-    const [editLoading, setEditLoading] = useState(false);
-    const [editError, setEditError] = useState("");
-    // 仮のタグ一覧（APIで取得する場合はuseEffectで取得）
-    const [tagList, setTagList] = useState([
+    const [tagList] = useState([
         { id: 1, name: "かき氷" },
         { id: 2, name: "ドリンク" },
         { id: 3, name: "フード" },
     ]);
 
-    // 設定タブ表示時に画像データをセット
-    useEffect(() => {
-        if (activeTab === 1) {
-            setEditImages([...limitedMenu, ...normalMenu, ...sideMenu]);
-        }
-    }, [activeTab, limitedMenu, normalMenu, sideMenu]);
-
-    // 編集フォームの値変更
-    const handleEditChange = (
-        idx: number,
-        key: keyof ImageItem,
-        value: any
-    ) => {
-        setEditImages((prev) => {
-            const next = [...prev];
-            next[idx] = { ...next[idx], [key]: value };
-            return next;
-        });
-    };
-
-    // タグ編集（tags: number[]）
-    const handleTagChange = (idx: number, tagId: number, checked: boolean) => {
-        setEditImages((prev) => {
-            const next = [...prev];
-            let tags = Array.isArray(next[idx].tags) ? next[idx].tags : [];
-            if (checked) {
-                tags = [...tags, tagId];
-            } else {
-                tags = tags.filter((id) => id !== tagId);
-            }
-            next[idx] = { ...next[idx], tags };
-            return next;
-        });
-    };
-
-    // 編集内容をAPIで保存
-    const handleEditSave = async (img: any, idx: number) => {
-        setEditLoading(true);
-        setEditError("");
-        try {
-            const res = await fetch(`${apiOrigin}/api/images/${img.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(img),
-            });
-            if (!res.ok) throw new Error("保存に失敗しました");
-            alert("保存しました");
-        } catch (e: any) {
-            setEditError(e.message || "保存に失敗しました");
-        } finally {
-            setEditLoading(false);
-        }
-    };
-    // DnD終了時の並び替え処理
+    // DnD並び替え用
     const onDragEnd = (result: any) => {
         if (!result.destination) return;
         const { source, destination } = result;
@@ -93,60 +65,37 @@ function App() {
         items.splice(destination.index, 0, removed);
         setItems(items);
     };
-    type ImageItem = {
-        id: number;
-        title: string;
-        file_path: string;
-        display_order?: number | null;
-        alt_text?: string;
-        tag_name?: string;
-        category_name?: string;
-        caption?: string;
-        price_s?: number | null;
-        price_l?: number | null;
-        price_other?: number | null;
-        tags?: number[];
-        is_public?: boolean;
-        start_at?: string;
-        end_at?: string;
-    };
 
-    // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
-    const [activeTab, setActiveTab] = useState<number>(0);
-    const apiOrigin = import.meta.env.VITE_API_ORIGIN;
-
-    // 並び替え用state（各カテゴリごと）
-    const [limitedMenu, setLimitedMenu] = useState<ImageItem[]>([]);
-    const [normalMenu, setNormalMenu] = useState<ImageItem[]>([]);
-    const [sideMenu, setSideMenu] = useState<ImageItem[]>([]);
-    // 並び順トグルstate（true: id昇順, false: id降順）
-    const [limitedAsc, setLimitedAsc] = useState<boolean>(true);
-    const [normalAsc, setNormalAsc] = useState<boolean>(true);
-    const [sideAsc, setSideAsc] = useState<boolean>(true);
+    // 設定タブ表示時に画像データをセット
+    useEffect(() => {
+        if (activeTab === 1) {
+            setEditImages([...limitedMenu, ...normalMenu, ...sideMenu]);
+        }
+    }, [activeTab, limitedMenu, normalMenu, sideMenu]);
 
     // 並び替えボタン用: id昇順/降順でstateを更新
     const handleLimitedSort = () => {
-        if (limitedAsc) {
-            setLimitedMenu([...limitedMenu].sort((a, b) => b.id - a.id));
-        } else {
-            setLimitedMenu([...limitedMenu].sort((a, b) => a.id - b.id));
-        }
+        setLimitedMenu(
+            limitedAsc
+                ? [...limitedMenu].sort((a, b) => b.id - a.id)
+                : [...limitedMenu].sort((a, b) => a.id - b.id)
+        );
         setLimitedAsc((v) => !v);
     };
     const handleNormalSort = () => {
-        if (normalAsc) {
-            setNormalMenu([...normalMenu].sort((a, b) => b.id - a.id));
-        } else {
-            setNormalMenu([...normalMenu].sort((a, b) => a.id - b.id));
-        }
+        setNormalMenu(
+            normalAsc
+                ? [...normalMenu].sort((a, b) => b.id - a.id)
+                : [...normalMenu].sort((a, b) => a.id - b.id)
+        );
         setNormalAsc((v) => !v);
     };
     const handleSideSort = () => {
-        if (sideAsc) {
-            setSideMenu([...sideMenu].sort((a, b) => b.id - a.id));
-        } else {
-            setSideMenu([...sideMenu].sort((a, b) => a.id - b.id));
-        }
+        setSideMenu(
+            sideAsc
+                ? [...sideMenu].sort((a, b) => b.id - a.id)
+                : [...sideMenu].sort((a, b) => a.id - b.id)
+        );
         setSideAsc((v) => !v);
     };
 
@@ -155,14 +104,9 @@ function App() {
         menuType: "limitedMenu" | "normalMenu" | "sideMenu"
     ) => {
         let items: ImageItem[] = [];
-        if (menuType === "limitedMenu") {
-            items = limitedMenu;
-        } else if (menuType === "normalMenu") {
-            items = normalMenu;
-        } else if (menuType === "sideMenu") {
-            items = sideMenu;
-        }
-        // display_orderを付与
+        if (menuType === "limitedMenu") items = limitedMenu;
+        else if (menuType === "normalMenu") items = normalMenu;
+        else if (menuType === "sideMenu") items = sideMenu;
         const payload = items.map((item, idx) => ({
             id: item.id,
             display_order: idx + 1,
@@ -170,9 +114,7 @@ function App() {
         try {
             const res = await fetch(`${apiOrigin}/api/images/display-order`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ orders: payload }),
             });
             if (!res.ok) throw new Error("DB更新に失敗しました");
@@ -182,6 +124,7 @@ function App() {
         }
     };
 
+    // 画像データ取得
     useEffect(() => {
         fetch(`${apiOrigin}/api/images`)
             .then((res) => {
@@ -190,28 +133,19 @@ function App() {
             })
             .then((data: ImageItem[]) => {
                 setLimitedMenu(
-                    data.filter(
-                        (img: ImageItem) => img.tag_name === "限定メニュー"
-                    )
+                    data.filter((img) => img.tag_name === "限定メニュー")
                 );
                 setNormalMenu(
-                    data.filter(
-                        (img: ImageItem) => img.tag_name === "通常メニュー"
-                    )
+                    data.filter((img) => img.tag_name === "通常メニュー")
                 );
                 setSideMenu(
-                    data.filter(
-                        (img: ImageItem) =>
-                            img.category_name === "サイドメニュー"
-                    )
+                    data.filter((img) => img.category_name === "サイドメニュー")
                 );
             })
             .catch(() => {
                 // データ取得失敗時の処理（必要ならUI追加）
             });
     }, [apiOrigin]);
-
-    // ...existing code...
 
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8 min-h-[900px]">
@@ -293,9 +227,7 @@ function App() {
                         apiOrigin={apiOrigin}
                         images={editImages}
                         tagList={tagList}
-                        onSave={async (img) => {
-                            setEditLoading(true);
-                            setEditError("");
+                        onSave={async (img: ImageItem) => {
                             try {
                                 const res = await fetch(
                                     `${apiOrigin}/api/images/${img.id}`,
@@ -311,9 +243,7 @@ function App() {
                                     throw new Error("保存に失敗しました");
                                 alert("保存しました");
                             } catch (e: any) {
-                                setEditError(e.message || "保存に失敗しました");
-                            } finally {
-                                setEditLoading(false);
+                                alert(e.message || "保存に失敗しました");
                             }
                         }}
                     />
