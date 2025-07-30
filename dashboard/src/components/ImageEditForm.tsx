@@ -9,6 +9,7 @@ interface Props {
     onChange: (idx: number, newImg: ImageItem) => void;
     onSave: (img: ImageItem) => void;
     apiOrigin: string;
+    isLast?: boolean;
 }
 
 const ImageEditForm: React.FC<Props> = ({
@@ -19,6 +20,7 @@ const ImageEditForm: React.FC<Props> = ({
     tagList,
     onChange,
     onSave,
+    isLast,
 }) => {
     const isCategorySelected = !!img.category_id;
     const isPublic =
@@ -27,7 +29,11 @@ const ImageEditForm: React.FC<Props> = ({
             : img.is_public == 1 || img.is_public == "1";
     const altText = img.title;
     return (
-        <form className="border rounded-xl p-4 bg-gray-50">
+        <form
+            className={`border rounded-xl p-4 bg-gray-50 ${
+                isLast ? "mb-0" : "mb-6"
+            }`}
+        >
             <div className="flex gap-4 items-center">
                 <img
                     src={`${apiOrigin}/images/${img.file_path}`}

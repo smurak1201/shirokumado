@@ -120,24 +120,27 @@ const ImageEditSection: React.FC<Props> = (props) => {
                 </div>
             ) : (
                 <div>
-                    {filteredImages.map((img, idx) => (
-                        <ImageEditForm
-                            key={img.id}
-                            apiOrigin={apiOrigin}
-                            img={img}
-                            idx={idx}
-                            categoryList={categoryList}
-                            tagList={tagList}
-                            onChange={(i: number, newImg: ImageItem) => {
-                                setEditImages((prev) => {
-                                    const next = [...prev];
-                                    next[i] = newImg;
-                                    return next;
-                                });
-                            }}
-                            onSave={handleEditSave}
-                        />
-                    ))}
+                    <div className="pb-6">
+                        {filteredImages.map((img, idx) => (
+                            <ImageEditForm
+                                key={img.id}
+                                apiOrigin={apiOrigin}
+                                img={img}
+                                idx={idx}
+                                categoryList={categoryList}
+                                tagList={tagList}
+                                onChange={(i: number, newImg: ImageItem) => {
+                                    setEditImages((prev) => {
+                                        const next = [...prev];
+                                        next[i] = newImg;
+                                        return next;
+                                    });
+                                }}
+                                onSave={handleEditSave}
+                                isLast={idx === filteredImages.length - 1}
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
