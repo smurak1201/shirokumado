@@ -12,6 +12,7 @@ type ImageItem = {
     alt_text?: string;
     tag_name?: string;
     category_name?: string;
+    category_id?: number | null;
     caption?: string;
     price_s?: number | null;
     price_l?: number | null;
@@ -23,12 +24,18 @@ type ImageItem = {
 };
 
 function App() {
+    // 設定画面 検索用state
+    const [searchCategory, setSearchCategory] = useState<string>("");
+    const [searchPublic, setSearchPublic] = useState<string>("");
+    const [searchTags, setSearchTags] = useState<number[]>([]);
     // 設定画面ページネーション用
     const [editPage, setEditPage] = useState(1);
     const editPageSize = 10;
-    const [editTotal, setEditTotal] = useState(0);
     // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
-    const [activeTab, setActiveTab] = useState<number>(0);
+    const [activeTab, setActiveTab] = useState<number>(() => {
+        const saved = window.localStorage.getItem("activeTab");
+        return saved !== null ? Number(saved) : 0;
+    });
     const apiOrigin = import.meta.env.VITE_API_ORIGIN;
 
     // 並び替え用state（各カテゴリごと）
@@ -92,12 +99,10 @@ function App() {
                     return res.json();
                 })
                 .then((data: ImageItem[]) => {
-                    setEditTotal(data.length);
                     setEditImages(data);
                 })
                 .catch(() => {
                     setEditImages([]);
-                    setEditTotal(0);
                 });
         }
     }, [activeTab, limitedMenu, normalMenu, sideMenu]);
@@ -207,7 +212,13 @@ function App() {
                                 }
                             `}
                             style={{ background: "none" }}
-                            onClick={() => setActiveTab(idx)}
+                            onClick={() => {
+                                setActiveTab(idx);
+                                window.localStorage.setItem(
+                                    "activeTab",
+                                    String(idx)
+                                );
+                            }}
                         >
                             {label}
                         </button>
@@ -266,40 +277,159 @@ function App() {
                     <p className="mb-2 text-sm text-gray-500">
                         画像のタイトルやタグなどを編集できます。
                     </p>
-                    <Pagination
-                        current={editPage}
-                        total={editTotal}
-                        pageSize={editPageSize}
-                        onChange={setEditPage}
-                    />
-                    <ImageEditSection
-                        apiOrigin={apiOrigin}
-                        images={editImages.slice(
-                            editPageSize * (editPage - 1),
-                            editPageSize * editPage
-                        )}
-                        categoryList={categoryList}
-                        tagList={tagList}
-                        onSave={async (img: ImageItem) => {
-                            try {
-                                const res = await fetch(
-                                    `${apiOrigin}/api/images/${img.id}`,
-                                    {
-                                        method: "PATCH",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                        },
-                                        body: JSON.stringify(img),
-                                    }
-                                );
-                                if (!res.ok)
-                                    throw new Error("保存に失敗しました");
-                                alert("保存しました");
-                            } catch (e: any) {
-                                alert(e.message || "保存に失敗しました");
-                            }
-                        }}
-                    />
+                    {/* 検索UI */}
+                    <form className="flex flex-wrap gap-4 mb-4 items-end">
+                        <div>
+                            <label className="text-xs text-gray-500">
+                                カテゴリー
+                            </label>
+                            <select
+                                className="w-32 px-2 py-1 border rounded"
+                                value={searchCategory}
+                                onChange={(e) => {
+                                    setSearchCategory(e.target.value);
+                                    setEditPage(1);
+                                }}
+                            >
+                                <option value="">すべて</option>
+                                {categoryList.map((cat) => (
+                                    <option key={cat.id} value={String(cat.id)}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="text-xs text-gray-500">
+                                公開状態
+                            </label>
+                            <select
+                                className="w-24 px-2 py-1 border rounded"
+                                value={searchPublic}
+                                onChange={(e) => {
+                                    setSearchPublic(e.target.value);
+                                    setEditPage(1);
+                                }}
+                            >
+                                <option value="">すべて</option>
+                                <option value="1">公開</option>
+                                <option value="0">非公開</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="text-xs text-gray-500">
+                                タグ
+                            </label>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                                {tagList.map((tag) => (
+                                    <label
+                                        key={tag.id}
+                                        className="flex items-center gap-1"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={searchTags.includes(
+                                                tag.id
+                                            )}
+                                            onChange={(e) => {
+                                                setEditPage(1);
+                                                setSearchTags((prev) =>
+                                                    e.target.checked
+                                                        ? [...prev, tag.id]
+                                                        : prev.filter(
+                                                              (tid) =>
+                                                                  tid !== tag.id
+                                                          )
+                                                );
+                                            }}
+                                        />
+                                        <span>{tag.name}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            className="px-3 py-1 bg-gray-200 rounded text-sm"
+                            onClick={() => {
+                                setSearchCategory("");
+                                setSearchPublic("");
+                                setSearchTags([]);
+                                setEditPage(1);
+                            }}
+                        >
+                            リセット
+                        </button>
+                    </form>
+                    {/* 絞り込みロジック */}
+                    {(() => {
+                        let filtered = editImages;
+                        if (searchCategory) {
+                            filtered = filtered.filter(
+                                (img) =>
+                                    String(img.category_id) === searchCategory
+                            );
+                        }
+                        if (searchPublic) {
+                            filtered = filtered.filter(
+                                (img) => String(img.is_public) === searchPublic
+                            );
+                        }
+                        if (searchTags.length > 0) {
+                            filtered = filtered.filter(
+                                (img) =>
+                                    Array.isArray(img.tags) &&
+                                    img.tags !== undefined &&
+                                    searchTags.every((tid) =>
+                                        (img.tags as number[]).includes(tid)
+                                    )
+                            );
+                        }
+                        return (
+                            <>
+                                <Pagination
+                                    current={editPage}
+                                    total={filtered.length}
+                                    pageSize={editPageSize}
+                                    onChange={setEditPage}
+                                />
+                                <ImageEditSection
+                                    apiOrigin={apiOrigin}
+                                    images={filtered.slice(
+                                        editPageSize * (editPage - 1),
+                                        editPageSize * editPage
+                                    )}
+                                    categoryList={categoryList}
+                                    tagList={tagList}
+                                    onSave={async (img: ImageItem) => {
+                                        try {
+                                            const res = await fetch(
+                                                `${apiOrigin}/api/images/${img.id}`,
+                                                {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type":
+                                                            "application/json",
+                                                    },
+                                                    body: JSON.stringify(img),
+                                                }
+                                            );
+                                            if (!res.ok)
+                                                throw new Error(
+                                                    "保存に失敗しました"
+                                                );
+                                            alert("保存しました");
+                                        } catch (e: any) {
+                                            alert(
+                                                e.message ||
+                                                    "保存に失敗しました"
+                                            );
+                                        }
+                                    }}
+                                />
+                            </>
+                        );
+                    })()}
                 </div>
             )}
             {activeTab === 2 && (
