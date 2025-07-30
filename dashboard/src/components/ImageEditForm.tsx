@@ -45,7 +45,7 @@ const ImageEditForm: React.FC<Props> = ({
                     <label className="text-xs text-gray-500">
                         タイトル
                         <textarea
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-base"
                             rows={2}
                             value={img.title ?? ""}
                             onChange={(e) =>
@@ -60,7 +60,7 @@ const ImageEditForm: React.FC<Props> = ({
                             type="number"
                             step="1"
                             inputMode="numeric"
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-base"
                             value={
                                 img.price_s != null
                                     ? Math.floor(img.price_s)
@@ -86,7 +86,7 @@ const ImageEditForm: React.FC<Props> = ({
                             type="number"
                             step="1"
                             inputMode="numeric"
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-base"
                             value={
                                 img.price_l != null
                                     ? Math.floor(img.price_l)
@@ -112,7 +112,7 @@ const ImageEditForm: React.FC<Props> = ({
                             type="number"
                             step="1"
                             inputMode="numeric"
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-base"
                             value={
                                 img.price_other != null
                                     ? Math.floor(img.price_other)
@@ -135,7 +135,7 @@ const ImageEditForm: React.FC<Props> = ({
                     <label className="text-xs text-gray-500">
                         キャプション
                         <textarea
-                            className="w-full px-2 py-1 border rounded"
+                            className="w-full px-2 py-1 border rounded text-base"
                             rows={7}
                             value={img.caption ?? ""}
                             onChange={(e) =>
