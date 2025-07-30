@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ImageEditForm from "./ImageEditForm";
 
 export type ImageItem = {
     id: number;
@@ -29,13 +30,10 @@ interface Props {
     onSave: (img: ImageItem) => Promise<void>;
 }
 
-// ...existing code...
 const ImageEditSection: React.FC<Props> = (props) => {
     const { apiOrigin, images, categoryList, tagList, onSave } = props;
     // Props未使用警告回避用（参照だけ）
-    void categoryList;
-    void tagList;
-    void onSave;
+    void apiOrigin;
 
     // 編集用state
     const [editImages, setEditImages] = useState<ImageItem[]>([]);
@@ -95,6 +93,10 @@ const ImageEditSection: React.FC<Props> = (props) => {
             cleanImg.display_order !== null
         )
             cleanImg.display_order = Number(cleanImg.display_order);
+        // is_publicをDB用に1/0へ変換（boolean→number）
+        if (typeof cleanImg.is_public === "boolean") {
+            (cleanImg as any).is_public = cleanImg.is_public ? 1 : 0;
+        }
         try {
             await onSave(cleanImg);
         } catch (e: any) {
@@ -117,382 +119,28 @@ const ImageEditSection: React.FC<Props> = (props) => {
                     登録がありません
                 </div>
             ) : (
-                filteredImages.map((img, idx) => {
-                    const isCategorySelected = !!img.category_id;
-                    let isPublic: boolean = false;
-                    if (typeof img.is_public === "number") {
-                        isPublic = img.is_public === 1;
-                    } else if (typeof img.is_public === "string") {
-                        isPublic = img.is_public === "1";
-                    }
-                    // alt_textはtitleと同じ値を自動でセット
-                    const altText = img.title;
-                    return (
-                        <form
+                <div>
+                    {filteredImages.map((img, idx) => (
+                        <ImageEditForm
                             key={img.id}
-                            className="border rounded-xl p-4 bg-gray-50"
-                        >
-                            <div className="flex gap-4 items-center">
-                                {/* file_path（画像プレビュー） */}
-                                <img
-                                    src={`${apiOrigin}/images/${img.file_path}`}
-                                    alt={altText}
-                                    className="w-24 h-24 object-cover rounded-lg"
-                                />
-                                <div className="flex-1 flex flex-col gap-2">
-                                    {/* title */}
-                                    <label className="text-xs text-gray-500">
-                                        タイトル
-                                        <input
-                                            type="text"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={img.title ?? ""}
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        title: e.target.value,
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
-                                    {/* price_s */}
-                                    <label className="text-xs text-gray-500">
-                                        価格S
-                                        <input
-                                            type="number"
-                                            step="1"
-                                            inputMode="numeric"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={
-                                                img.price_s != null
-                                                    ? Math.floor(img.price_s)
-                                                    : ""
-                                            }
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        price_s:
-                                                            e.target.value ===
-                                                            ""
-                                                                ? null
-                                                                : Math.floor(
-                                                                      Number(
-                                                                          e
-                                                                              .target
-                                                                              .value
-                                                                      )
-                                                                  ),
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
-                                    {/* price_l */}
-                                    <label className="text-xs text-gray-500">
-                                        価格L
-                                        <input
-                                            type="number"
-                                            step="1"
-                                            inputMode="numeric"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={
-                                                img.price_l != null
-                                                    ? Math.floor(img.price_l)
-                                                    : ""
-                                            }
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        price_l:
-                                                            e.target.value ===
-                                                            ""
-                                                                ? null
-                                                                : Math.floor(
-                                                                      Number(
-                                                                          e
-                                                                              .target
-                                                                              .value
-                                                                      )
-                                                                  ),
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
-                                    {/* price_other */}
-                                    <label className="text-xs text-gray-500">
-                                        その他価格
-                                        <input
-                                            type="number"
-                                            step="1"
-                                            inputMode="numeric"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={
-                                                img.price_other != null
-                                                    ? Math.floor(
-                                                          img.price_other
-                                                      )
-                                                    : ""
-                                            }
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        price_other:
-                                                            e.target.value ===
-                                                            ""
-                                                                ? null
-                                                                : Math.floor(
-                                                                      Number(
-                                                                          e
-                                                                              .target
-                                                                              .value
-                                                                      )
-                                                                  ),
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
-                                    {/* caption */}
-                                    <label className="text-xs text-gray-500">
-                                        キャプション
-                                        <textarea
-                                            className="w-full px-2 py-1 border rounded"
-                                            rows={7}
-                                            value={img.caption ?? ""}
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        caption: e.target.value,
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
-                                    {/* category_id */}
-                                    <label className="text-xs text-gray-500">
-                                        カテゴリー
-                                        <select
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={img.category_id ?? ""}
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        category_id: Number(
-                                                            e.target.value
-                                                        ),
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        >
-                                            <option value="">
-                                                選択してください
-                                            </option>
-                                            {categoryList.map((cat) => (
-                                                <option
-                                                    key={cat.id}
-                                                    value={cat.id}
-                                                >
-                                                    {cat.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </label>
-                                    {/* is_public */}
-                                    <label className="text-xs text-gray-500">
-                                        公開状態
-                                        <div className="flex gap-4">
-                                            <label className="flex items-center gap-1">
-                                                <input
-                                                    type="radio"
-                                                    name={`is_public_${img.id}`}
-                                                    value="1"
-                                                    checked={isPublic === true}
-                                                    onChange={() => {
-                                                        setEditImages(
-                                                            (prev) => {
-                                                                const next = [
-                                                                    ...prev,
-                                                                ];
-                                                                next[idx] = {
-                                                                    ...next[
-                                                                        idx
-                                                                    ],
-                                                                    is_public:
-                                                                        true,
-                                                                };
-                                                                return next;
-                                                            }
-                                                        );
-                                                    }}
-                                                />
-                                                <span>公開</span>
-                                            </label>
-                                            <label className="flex items-center gap-1">
-                                                <input
-                                                    type="radio"
-                                                    name={`is_public_${img.id}`}
-                                                    value="0"
-                                                    checked={isPublic === false}
-                                                    onChange={() => {
-                                                        setEditImages(
-                                                            (prev) => {
-                                                                const next = [
-                                                                    ...prev,
-                                                                ];
-                                                                next[idx] = {
-                                                                    ...next[
-                                                                        idx
-                                                                    ],
-                                                                    is_public:
-                                                                        false,
-                                                                };
-                                                                return next;
-                                                            }
-                                                        );
-                                                    }}
-                                                />
-                                                <span>非公開</span>
-                                            </label>
-                                        </div>
-                                    </label>
-                                    {/* start_at */}
-                                    <label className="text-xs text-gray-500">
-                                        公開開始日時
-                                        <input
-                                            type="datetime-local"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={img.start_at ?? ""}
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        start_at:
-                                                            e.target.value,
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
-                                    {/* end_at */}
-                                    <label className="text-xs text-gray-500">
-                                        公開終了日時
-                                        <input
-                                            type="datetime-local"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={img.end_at ?? ""}
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        end_at: e.target.value,
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
-                                    {/* タグ複数選択（DBカラム外） */}
-                                    <label className="text-xs text-gray-500">
-                                        タグ
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {tagList.map((tag) => (
-                                                <label
-                                                    key={tag.id}
-                                                    className="flex items-center gap-1"
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={
-                                                            img.tags?.includes(
-                                                                tag.id
-                                                            ) ?? false
-                                                        }
-                                                        onChange={(e) => {
-                                                            setEditImages(
-                                                                (prev) => {
-                                                                    const next =
-                                                                        [
-                                                                            ...prev,
-                                                                        ];
-                                                                    let tags =
-                                                                        next[
-                                                                            idx
-                                                                        ]
-                                                                            .tags ??
-                                                                        [];
-                                                                    if (
-                                                                        e.target
-                                                                            .checked
-                                                                    ) {
-                                                                        tags = [
-                                                                            ...tags,
-                                                                            tag.id,
-                                                                        ];
-                                                                    } else {
-                                                                        tags =
-                                                                            tags.filter(
-                                                                                (
-                                                                                    tid
-                                                                                ) =>
-                                                                                    tid !==
-                                                                                    tag.id
-                                                                            );
-                                                                    }
-                                                                    next[idx] =
-                                                                        {
-                                                                            ...next[
-                                                                                idx
-                                                                            ],
-                                                                            tags,
-                                                                        };
-                                                                    return next;
-                                                                }
-                                                            );
-                                                        }}
-                                                    />
-                                                    <span>{tag.name}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </label>
-                                </div>
-                                <button
-                                    type="button"
-                                    className="px-4 py-2 bg-blue-500 text-white rounded"
-                                    disabled={!isCategorySelected}
-                                    onClick={() => handleEditSave(img)}
-                                >
-                                    保存
-                                </button>
-                            </div>
-                        </form>
-                    );
-                })
+                            img={img}
+                            idx={idx}
+                            categoryList={categoryList}
+                            tagList={tagList}
+                            onChange={(i: number, newImg: ImageItem) => {
+                                setEditImages((prev) => {
+                                    const next = [...prev];
+                                    next[i] = newImg;
+                                    return next;
+                                });
+                            }}
+                            onSave={handleEditSave}
+                        />
+                    ))}
+                </div>
             )}
         </div>
     );
 };
+
 export default ImageEditSection;
