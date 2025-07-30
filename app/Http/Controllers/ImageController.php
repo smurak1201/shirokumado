@@ -36,16 +36,36 @@ class ImageController extends Controller
     // API用: 画像一覧をJSONで返す
     public function index()
     {
-        $images = \DB::table('images')
-            ->join('image_tag', 'images.id', '=', 'image_tag.image_id')
-            ->join('tags', 'image_tag.tag_id', '=', 'tags.id')
-            ->leftJoin('categories', 'images.category_id', '=', 'categories.id')
-            ->where('images.is_public', true)
-            ->select('images.*', 'tags.name as tag_name', 'categories.name as category_name')
-            ->orderBy('images.display_order')
-            ->orderBy('images.id')
+        // Eloquentで画像＋タグ＋カテゴリを取得
+        $images = Image::with(['tags', 'category'])
+            ->where('is_public', true)
+            ->orderBy('display_order')
+            ->orderBy('id')
             ->get();
-        return response()->json($images);
+
+        // tagsはID配列として返す
+        $result = $images->map(function ($img) {
+            return [
+                'id' => $img->id,
+                'title' => $img->title,
+                'file_path' => $img->file_path,
+                'alt_text' => $img->alt_text,
+                'caption' => $img->caption,
+                'category_id' => $img->category_id,
+                'category_name' => optional($img->category)->name ?? '',
+                'display_order' => $img->display_order,
+                'is_public' => $img->is_public,
+                'price_s' => $img->price_s,
+                'price_l' => $img->price_l,
+                'price_other' => $img->price_other,
+                'start_at' => $img->start_at,
+                'end_at' => $img->end_at,
+                'tags' => $img->tags ? $img->tags->pluck('id')->values() : [],
+                'created_at' => $img->created_at,
+                'updated_at' => $img->updated_at,
+            ];
+        });
+        return response()->json($result);
     }
     // 画像情報＋タグ編集API
     public function update(Request $request, $id)

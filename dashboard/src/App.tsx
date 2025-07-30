@@ -41,6 +41,8 @@ function App() {
     const [categoryList, setCategoryList] = useState<
         { id: number; name: string }[]
     >([]);
+    // タグ一覧
+    const [tagList, setTagList] = useState<{ id: number; name: string }[]>([]);
 
     // カテゴリー一覧取得
     useEffect(() => {
@@ -48,6 +50,10 @@ function App() {
             .then((res) => (res.ok ? res.json() : []))
             .then((data) => setCategoryList(data))
             .catch(() => setCategoryList([]));
+        fetch(`${apiOrigin}/api/tags`)
+            .then((res) => (res.ok ? res.json() : []))
+            .then((data) => setTagList(data))
+            .catch(() => setTagList([]));
     }, [apiOrigin]);
     // DnD並び替え用
     const onDragEnd = (result: any) => {
@@ -138,12 +144,19 @@ function App() {
                 return res.json();
             })
             .then((data: ImageItem[]) => {
+                // 限定メニュー: tagsに2が含まれる
                 setLimitedMenu(
-                    data.filter((img) => img.tag_name === "限定メニュー")
+                    data.filter(
+                        (img) => Array.isArray(img.tags) && img.tags.includes(2)
+                    )
                 );
+                // 通常メニュー: tagsに1が含まれる
                 setNormalMenu(
-                    data.filter((img) => img.tag_name === "通常メニュー")
+                    data.filter(
+                        (img) => Array.isArray(img.tags) && img.tags.includes(1)
+                    )
                 );
+                // サイドメニュー: category_nameが"サイドメニュー"
                 setSideMenu(
                     data.filter((img) => img.category_name === "サイドメニュー")
                 );
@@ -233,6 +246,7 @@ function App() {
                         apiOrigin={apiOrigin}
                         images={editImages}
                         categoryList={categoryList}
+                        tagList={tagList}
                         onSave={async (img: ImageItem) => {
                             try {
                                 const res = await fetch(
