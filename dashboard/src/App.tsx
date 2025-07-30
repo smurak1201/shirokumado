@@ -37,12 +37,18 @@ function App() {
 
     // 設定画面用: 編集フォームのローカルstate
     const [editImages, setEditImages] = useState<ImageItem[]>([]);
-    const [tagList] = useState([
-        { id: 1, name: "かき氷" },
-        { id: 2, name: "ドリンク" },
-        { id: 3, name: "フード" },
-    ]);
+    // カテゴリー一覧
+    const [categoryList, setCategoryList] = useState<
+        { id: number; name: string }[]
+    >([]);
 
+    // カテゴリー一覧取得
+    useEffect(() => {
+        fetch(`${apiOrigin}/api/categories`)
+            .then((res) => (res.ok ? res.json() : []))
+            .then((data) => setCategoryList(data))
+            .catch(() => setCategoryList([]));
+    }, [apiOrigin]);
     // DnD並び替え用
     const onDragEnd = (result: any) => {
         if (!result.destination) return;
@@ -226,7 +232,7 @@ function App() {
                     <ImageEditSection
                         apiOrigin={apiOrigin}
                         images={editImages}
-                        tagList={tagList}
+                        categoryList={categoryList}
                         onSave={async (img: ImageItem) => {
                             try {
                                 const res = await fetch(
