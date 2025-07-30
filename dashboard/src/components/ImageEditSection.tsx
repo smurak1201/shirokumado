@@ -70,8 +70,42 @@ const ImageEditSection: React.FC<Props> = ({
     const handleEditSave = async (img: ImageItem) => {
         setEditLoading(true);
         setEditError("");
+        // 数値項目の型補正（個別プロパティごと）
+        const cleanImg = { ...img };
+        if (typeof cleanImg.price_s === "string" && cleanImg.price_s === "")
+            cleanImg.price_s = null;
+        if (typeof cleanImg.price_s === "string" && cleanImg.price_s !== null)
+            cleanImg.price_s = Number(cleanImg.price_s);
+
+        if (typeof cleanImg.price_l === "string" && cleanImg.price_l === "")
+            cleanImg.price_l = null;
+        if (typeof cleanImg.price_l === "string" && cleanImg.price_l !== null)
+            cleanImg.price_l = Number(cleanImg.price_l);
+
+        if (
+            typeof cleanImg.price_other === "string" &&
+            cleanImg.price_other === ""
+        )
+            cleanImg.price_other = null;
+        if (
+            typeof cleanImg.price_other === "string" &&
+            cleanImg.price_other !== null
+        )
+            cleanImg.price_other = Number(cleanImg.price_other);
+
+        if (
+            typeof cleanImg.display_order === "string" &&
+            cleanImg.display_order === ""
+        )
+            cleanImg.display_order = null;
+        if (
+            typeof cleanImg.display_order === "string" &&
+            cleanImg.display_order !== null
+        )
+            cleanImg.display_order = Number(cleanImg.display_order);
+
         try {
-            await onSave(img);
+            await onSave(cleanImg);
         } catch (e: any) {
             setEditError(e.message || "保存に失敗しました");
         } finally {

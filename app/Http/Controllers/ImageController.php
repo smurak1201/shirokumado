@@ -72,7 +72,26 @@ class ImageController extends Controller
             $image->tags()->sync($request->input('tags'));
         }
 
-        // 編集後の画像＋タグ情報を返す
-        return response()->json($image->load('tags'));
+        // 編集後の画像＋タグ情報を返す（tagsはidとnameの配列、category_nameも付与）
+        $image->load(['tags', 'category']);
+        return response()->json([
+            'id' => $image->id,
+            'title' => $image->title,
+            'file_path' => $image->file_path,
+            'alt_text' => $image->alt_text,
+            'caption' => $image->caption,
+            'category_id' => $image->category_id,
+            'category_name' => optional($image->category)->name ?? '',
+            'display_order' => $image->display_order,
+            'is_public' => $image->is_public,
+            'price_s' => $image->price_s,
+            'price_l' => $image->price_l,
+            'price_other' => $image->price_other,
+            'start_at' => $image->start_at,
+            'end_at' => $image->end_at,
+            'tags' => $image->tags ? $image->tags->map(fn($t) => ['id' => $t->id, 'name' => $t->name])->values() : [],
+            'created_at' => $image->created_at,
+            'updated_at' => $image->updated_at,
+        ]);
     }
 }
