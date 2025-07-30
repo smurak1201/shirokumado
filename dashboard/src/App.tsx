@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import MenuSection from "./MenuSection";
 import ImageEditSection from "./components/ImageEditSection";
+import Pagination from "./components/Pagination";
 
 type ImageItem = {
     id: number;
@@ -265,47 +266,12 @@ function App() {
                     <p className="mb-2 text-sm text-gray-500">
                         画像のタイトルやタグなどを編集できます。
                     </p>
-                    {/* ページネーションUI */}
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-sm text-gray-500">
-                            全{editTotal}件中{" "}
-                            {editPageSize * (editPage - 1) + 1}～
-                            {Math.min(editPage * editPageSize, editTotal)}
-                            件を表示
-                        </span>
-                        <div className="flex gap-2">
-                            <button
-                                className="px-2 py-1 border rounded text-sm"
-                                disabled={editPage === 1}
-                                onClick={() =>
-                                    setEditPage((p) => Math.max(1, p - 1))
-                                }
-                            >
-                                前へ
-                            </button>
-                            <span className="px-2 text-sm">
-                                {editPage} /{" "}
-                                {Math.max(
-                                    1,
-                                    Math.ceil(editTotal / editPageSize)
-                                )}
-                            </span>
-                            <button
-                                className="px-2 py-1 border rounded text-sm"
-                                disabled={editPage * editPageSize >= editTotal}
-                                onClick={() =>
-                                    setEditPage((p) =>
-                                        Math.min(
-                                            Math.ceil(editTotal / editPageSize),
-                                            p + 1
-                                        )
-                                    )
-                                }
-                            >
-                                次へ
-                            </button>
-                        </div>
-                    </div>
+                    <Pagination
+                        current={editPage}
+                        total={editTotal}
+                        pageSize={editPageSize}
+                        onChange={setEditPage}
+                    />
                     <ImageEditSection
                         apiOrigin={apiOrigin}
                         images={editImages.slice(
