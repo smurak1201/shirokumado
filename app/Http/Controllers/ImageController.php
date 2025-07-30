@@ -36,9 +36,8 @@ class ImageController extends Controller
     // API用: 画像一覧をJSONで返す
     public function index()
     {
-        // Eloquentで画像＋タグ＋カテゴリを取得
+        // Eloquentで画像＋タグ＋カテゴリを取得（公開・非公開すべて）
         $images = Image::with(['tags', 'category'])
-            ->where('is_public', true)
             ->orderBy('display_order')
             ->orderBy('id')
             ->get();

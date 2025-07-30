@@ -105,6 +105,7 @@ const ImageEditSection: React.FC<Props> = (props) => {
     };
 
     // category_idが厳密に存在する画像のみ表示（null/undefined/0/空文字除外）
+    // 公開・非公開問わず、category_idが存在する画像はすべて表示
     const filteredImages = editImages.filter((img) => !!img.category_id);
 
     return (
@@ -124,6 +125,8 @@ const ImageEditSection: React.FC<Props> = (props) => {
                     } else if (typeof img.is_public === "string") {
                         isPublic = img.is_public === "1";
                     }
+                    // alt_textはtitleと同じ値を自動でセット
+                    const altText = img.title;
                     return (
                         <form
                             key={img.id}
@@ -133,30 +136,10 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                 {/* file_path（画像プレビュー） */}
                                 <img
                                     src={`${apiOrigin}/images/${img.file_path}`}
-                                    alt={img.alt_text || img.title}
+                                    alt={altText}
                                     className="w-24 h-24 object-cover rounded-lg"
                                 />
                                 <div className="flex-1 flex flex-col gap-2">
-                                    {/* alt_text */}
-                                    <label className="text-xs text-gray-500">
-                                        代替テキスト
-                                        <input
-                                            type="text"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={img.alt_text ?? ""}
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        alt_text:
-                                                            e.target.value,
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
-                                    </label>
                                     {/* title */}
                                     <label className="text-xs text-gray-500">
                                         タイトル
@@ -181,8 +164,14 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                         価格S
                                         <input
                                             type="number"
+                                            step="1"
+                                            inputMode="numeric"
                                             className="w-full px-2 py-1 border rounded"
-                                            value={img.price_s ?? ""}
+                                            value={
+                                                img.price_s != null
+                                                    ? Math.floor(img.price_s)
+                                                    : ""
+                                            }
                                             onChange={(e) => {
                                                 setEditImages((prev) => {
                                                     const next = [...prev];
@@ -192,9 +181,12 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                                             e.target.value ===
                                                             ""
                                                                 ? null
-                                                                : Number(
-                                                                      e.target
-                                                                          .value
+                                                                : Math.floor(
+                                                                      Number(
+                                                                          e
+                                                                              .target
+                                                                              .value
+                                                                      )
                                                                   ),
                                                     };
                                                     return next;
@@ -207,8 +199,14 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                         価格L
                                         <input
                                             type="number"
+                                            step="1"
+                                            inputMode="numeric"
                                             className="w-full px-2 py-1 border rounded"
-                                            value={img.price_l ?? ""}
+                                            value={
+                                                img.price_l != null
+                                                    ? Math.floor(img.price_l)
+                                                    : ""
+                                            }
                                             onChange={(e) => {
                                                 setEditImages((prev) => {
                                                     const next = [...prev];
@@ -218,9 +216,12 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                                             e.target.value ===
                                                             ""
                                                                 ? null
-                                                                : Number(
-                                                                      e.target
-                                                                          .value
+                                                                : Math.floor(
+                                                                      Number(
+                                                                          e
+                                                                              .target
+                                                                              .value
+                                                                      )
                                                                   ),
                                                     };
                                                     return next;
@@ -233,8 +234,16 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                         その他価格
                                         <input
                                             type="number"
+                                            step="1"
+                                            inputMode="numeric"
                                             className="w-full px-2 py-1 border rounded"
-                                            value={img.price_other ?? ""}
+                                            value={
+                                                img.price_other != null
+                                                    ? Math.floor(
+                                                          img.price_other
+                                                      )
+                                                    : ""
+                                            }
                                             onChange={(e) => {
                                                 setEditImages((prev) => {
                                                     const next = [...prev];
@@ -244,9 +253,12 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                                             e.target.value ===
                                                             ""
                                                                 ? null
-                                                                : Number(
-                                                                      e.target
-                                                                          .value
+                                                                : Math.floor(
+                                                                      Number(
+                                                                          e
+                                                                              .target
+                                                                              .value
+                                                                      )
                                                                   ),
                                                     };
                                                     return next;
@@ -259,6 +271,7 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                         キャプション
                                         <textarea
                                             className="w-full px-2 py-1 border rounded"
+                                            rows={7}
                                             value={img.caption ?? ""}
                                             onChange={(e) => {
                                                 setEditImages((prev) => {
@@ -303,32 +316,6 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                                 </option>
                                             ))}
                                         </select>
-                                    </label>
-                                    {/* display_order */}
-                                    <label className="text-xs text-gray-500">
-                                        表示順
-                                        <input
-                                            type="number"
-                                            className="w-full px-2 py-1 border rounded"
-                                            value={img.display_order ?? ""}
-                                            onChange={(e) => {
-                                                setEditImages((prev) => {
-                                                    const next = [...prev];
-                                                    next[idx] = {
-                                                        ...next[idx],
-                                                        display_order:
-                                                            e.target.value ===
-                                                            ""
-                                                                ? null
-                                                                : Number(
-                                                                      e.target
-                                                                          .value
-                                                                  ),
-                                                    };
-                                                    return next;
-                                                });
-                                            }}
-                                        />
                                     </label>
                                     {/* is_public */}
                                     <label className="text-xs text-gray-500">

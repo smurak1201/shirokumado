@@ -22,6 +22,10 @@ type ImageItem = {
 };
 
 function App() {
+    // 設定画面ページネーション用
+    const [editPage, setEditPage] = useState(1);
+    const editPageSize = 10;
+    const [editTotal, setEditTotal] = useState(0);
     // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
     const [activeTab, setActiveTab] = useState<number>(0);
     const apiOrigin = import.meta.env.VITE_API_ORIGIN;
@@ -81,7 +85,19 @@ function App() {
     // 設定タブ表示時に画像データをセット
     useEffect(() => {
         if (activeTab === 1) {
-            setEditImages([...limitedMenu, ...normalMenu, ...sideMenu]);
+            fetch(`${apiOrigin}/api/images`)
+                .then((res) => {
+                    if (!res.ok) throw new Error("API error");
+                    return res.json();
+                })
+                .then((data: ImageItem[]) => {
+                    setEditTotal(data.length);
+                    setEditImages(data);
+                })
+                .catch(() => {
+                    setEditImages([]);
+                    setEditTotal(0);
+                });
         }
     }, [activeTab, limitedMenu, normalMenu, sideMenu]);
 
@@ -144,21 +160,28 @@ function App() {
                 return res.json();
             })
             .then((data: ImageItem[]) => {
+                // 公開画像のみ抽出（型を文字列で統一判定）
+                const publicImages = data.filter(
+                    (img) =>
+                        String(img.is_public) === "1" || img.is_public === true
+                );
                 // 限定メニュー: tagsに2が含まれる
                 setLimitedMenu(
-                    data.filter(
+                    publicImages.filter(
                         (img) => Array.isArray(img.tags) && img.tags.includes(2)
                     )
                 );
                 // 通常メニュー: tagsに1が含まれる
                 setNormalMenu(
-                    data.filter(
+                    publicImages.filter(
                         (img) => Array.isArray(img.tags) && img.tags.includes(1)
                     )
                 );
                 // サイドメニュー: category_nameが"サイドメニュー"
                 setSideMenu(
-                    data.filter((img) => img.category_name === "サイドメニュー")
+                    publicImages.filter(
+                        (img) => img.category_name === "サイドメニュー"
+                    )
                 );
             })
             .catch(() => {
@@ -242,9 +265,53 @@ function App() {
                     <p className="mb-2 text-sm text-gray-500">
                         画像のタイトルやタグなどを編集できます。
                     </p>
+                    {/* ページネーションUI */}
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm text-gray-500">
+                            全{editTotal}件中{" "}
+                            {editPageSize * (editPage - 1) + 1}～
+                            {Math.min(editPage * editPageSize, editTotal)}
+                            件を表示
+                        </span>
+                        <div className="flex gap-2">
+                            <button
+                                className="px-2 py-1 border rounded text-sm"
+                                disabled={editPage === 1}
+                                onClick={() =>
+                                    setEditPage((p) => Math.max(1, p - 1))
+                                }
+                            >
+                                前へ
+                            </button>
+                            <span className="px-2 text-sm">
+                                {editPage} /{" "}
+                                {Math.max(
+                                    1,
+                                    Math.ceil(editTotal / editPageSize)
+                                )}
+                            </span>
+                            <button
+                                className="px-2 py-1 border rounded text-sm"
+                                disabled={editPage * editPageSize >= editTotal}
+                                onClick={() =>
+                                    setEditPage((p) =>
+                                        Math.min(
+                                            Math.ceil(editTotal / editPageSize),
+                                            p + 1
+                                        )
+                                    )
+                                }
+                            >
+                                次へ
+                            </button>
+                        </div>
+                    </div>
                     <ImageEditSection
                         apiOrigin={apiOrigin}
-                        images={editImages}
+                        images={editImages.slice(
+                            editPageSize * (editPage - 1),
+                            editPageSize * editPage
+                        )}
                         categoryList={categoryList}
                         tagList={tagList}
                         onSave={async (img: ImageItem) => {
