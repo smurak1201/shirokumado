@@ -44,9 +44,9 @@ const ImageEditForm: React.FC<Props> = ({
                     {/* title */}
                     <label className="text-xs text-gray-500">
                         タイトル
-                        <input
-                            type="text"
+                        <textarea
                             className="w-full px-2 py-1 border rounded"
+                            rows={2}
                             value={img.title ?? ""}
                             onChange={(e) =>
                                 onChange(idx, { ...img, title: e.target.value })
