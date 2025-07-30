@@ -228,12 +228,16 @@ const ImageEditForm: React.FC<Props> = ({
                                 <button
                                     type="button"
                                     className="text-gray-400 hover:text-gray-700 px-2"
-                                    onClick={() =>
+                                    onClick={(
+                                        e: React.MouseEvent<HTMLButtonElement>
+                                    ) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
                                         onChange(idx, {
                                             ...img,
                                             start_at: "",
-                                        })
-                                    }
+                                        });
+                                    }}
                                     aria-label="公開開始日時クリア"
                                 >
                                     ×
@@ -260,12 +264,16 @@ const ImageEditForm: React.FC<Props> = ({
                                 <button
                                     type="button"
                                     className="text-gray-400 hover:text-gray-700 px-2"
-                                    onClick={() =>
+                                    onClick={(
+                                        e: React.MouseEvent<HTMLButtonElement>
+                                    ) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
                                         onChange(idx, {
                                             ...img,
                                             end_at: "",
-                                        })
-                                    }
+                                        });
+                                    }}
                                     aria-label="公開終了日時クリア"
                                 >
                                     ×
