@@ -418,6 +418,13 @@ function App() {
                                                 throw new Error(
                                                     "保存に失敗しました"
                                                 );
+                                            // 保存後に画像一覧を再取得してstateを更新
+                                            const imagesRes = await fetch(
+                                                `${apiOrigin}/api/images`
+                                            );
+                                            const newImages =
+                                                await imagesRes.json();
+                                            setEditImages(newImages);
                                             alert("保存しました");
                                         } catch (e: any) {
                                             alert(
