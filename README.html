@@ -51,8 +51,8 @@
         overflow-x: auto;
         white-space: pre;
         max-width: 100%;
-        word-wrap: break-word;
         -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
       }
       h1 {
         font-size: 1.4em;
@@ -73,18 +73,34 @@
     }
     h1, h2, h3, h4 { color: #2563eb; }
     pre, code { background: #f3f4f6; padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.85em; }
-    .dir-tree { 
-      background: #f3f4f6; 
-      padding: 1em; 
-      border-radius: 6px; 
-      font-family: 'Fira Mono', 'Consolas', monospace; 
+    .dir-tree {
+      background: #f3f4f6;
+      padding: 1em;
+      border-radius: 6px;
+      font-family: 'Fira Mono', 'Consolas', monospace;
       font-size: 0.8em;
       overflow-x: auto;
       white-space: pre;
       max-width: 100%;
-      word-wrap: break-word;
+      box-sizing: border-box;
     }
-    ul, ol { margin-left: 1.5em; }
+    ul, ol {
+      margin-left: 1.5em;
+      padding-left: 0;
+    }
+    @media (max-width: 768px) {
+      ul, ol {
+        margin-left: 1em;
+        padding-left: 0;
+      }
+      li {
+        margin-bottom: 0.3em;
+      }
+      code {
+        font-size: 0.8em;
+        word-break: break-all;
+      }
+    }
     hr { margin: 2em 0; }
   </style>
 </head>
