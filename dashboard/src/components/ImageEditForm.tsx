@@ -10,6 +10,7 @@ interface Props {
     onSave: (img: ImageItem) => void;
     apiOrigin: string;
     isLast?: boolean;
+    onDeleted?: (img: ImageItem) => void;
 }
 
 const ImageEditForm: React.FC<Props> = ({
@@ -21,7 +22,30 @@ const ImageEditForm: React.FC<Props> = ({
     onChange,
     onSave,
     isLast,
+    onDeleted,
 }) => {
+    const [deleteConfirm, setDeleteConfirm] = React.useState(false);
+    const [deleting, setDeleting] = React.useState(false);
+    const handleDelete = async () => {
+        if (!deleteConfirm) {
+            setDeleteConfirm(true);
+            setTimeout(() => setDeleteConfirm(false), 4000); // 4秒で自動リセット
+            return;
+        }
+        setDeleting(true);
+        try {
+            const res = await fetch(`${apiOrigin}/api/images/${img.id}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error("削除に失敗しました");
+            if (onDeleted) onDeleted(img);
+        } catch (e: any) {
+            alert(e.message || "削除に失敗しました");
+        } finally {
+            setDeleting(false);
+            setDeleteConfirm(false);
+        }
+    };
     const isCategorySelected = !!img.category_id;
     const isPublic =
         typeof img.is_public === "boolean"
@@ -313,14 +337,31 @@ const ImageEditForm: React.FC<Props> = ({
                         </div>
                     </label>
                 </div>
-                <button
-                    type="button"
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
-                    disabled={!isCategorySelected}
-                    onClick={() => onSave(img)}
-                >
-                    保存
-                </button>
+                <div className="flex flex-col gap-2 min-w-[90px]">
+                    <button
+                        type="button"
+                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        disabled={!isCategorySelected}
+                        onClick={() => onSave(img)}
+                    >
+                        保存
+                    </button>
+                    <button
+                        type="button"
+                        className={`px-4 py-2 rounded text-white ${
+                            deleteConfirm ? "bg-red-700" : "bg-red-500"
+                        }`}
+                        disabled={deleting}
+                        onClick={handleDelete}
+                        title="この操作は取り消しできません"
+                    >
+                        {deleting
+                            ? "削除中..."
+                            : deleteConfirm
+                            ? "本当に削除しますか? (再クリック)"
+                            : "削除"}
+                    </button>
+                </div>
             </div>
         </form>
     );
