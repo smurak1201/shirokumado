@@ -38,6 +38,7 @@ const ImageEditForm: React.FC<Props> = ({
                 method: "DELETE",
             });
             if (!res.ok) throw new Error("削除に失敗しました");
+            alert("画像を削除しました");
             if (onDeleted) onDeleted(img);
         } catch (e: any) {
             alert(e.message || "削除に失敗しました");

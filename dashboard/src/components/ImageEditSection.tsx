@@ -141,6 +141,13 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                     });
                                 }}
                                 onSave={handleEditSave}
+                                onDeleted={(deletedImg) => {
+                                    setEditImages((prev) =>
+                                        prev.filter(
+                                            (i) => i.id !== deletedImg.id
+                                        )
+                                    );
+                                }}
                                 isLast={idx === filteredImages.length - 1}
                             />
                         ))}
