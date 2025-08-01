@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
 import MenuSection from "./MenuSection";
 import ImageEditSection from "./components/ImageEditSection";
+import ImageAddForm from "./components/ImageAddForm";
 import Pagination from "./components/Pagination";
 
 type ImageItem = {
@@ -437,6 +438,29 @@ function App() {
                             </>
                         );
                     })()}
+                </div>
+            )}
+            {activeTab === 2 && (
+                <div className="bg-white rounded-3xl p-6 shadow-sm">
+                    <h2 className="text-lg font-bold mb-4 text-gray-700">
+                        追加
+                    </h2>
+                    <p className="mb-2 text-sm text-gray-500">
+                        新しい画像を登録できます。
+                    </p>
+                    <ImageAddForm
+                        apiOrigin={apiOrigin}
+                        categoryList={categoryList}
+                        tagList={tagList}
+                        onAdded={async () => {
+                            // 画像追加後に画像一覧を再取得し編集画面に反映
+                            const res = await fetch(`${apiOrigin}/api/images`);
+                            if (res.ok) {
+                                const data = await res.json();
+                                setEditImages(data);
+                            }
+                        }}
+                    />
                 </div>
             )}
             {activeTab === 2 && (

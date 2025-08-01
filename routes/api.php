@@ -9,5 +9,6 @@ use App\Http\Controllers\ImageController;
 Route::get('tags', [TagController::class, 'index']);
 Route::get('categories', [CategoryController::class, 'index']);
 Route::get('images', [ImageController::class, 'index']);
+Route::post('images', [ImageController::class, 'store']);
 Route::post('images/display-order', [ImageController::class, 'updateDisplayOrder']);
 Route::patch('images/{id}', [ImageController::class, 'update']);

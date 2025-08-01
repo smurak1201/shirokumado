@@ -7,6 +7,71 @@ use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+    // 画像新規追加API
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'image' => 'required|file|image|mimes:jpg,jpeg,png,gif,webp,bmp',
+            'title' => 'required|string|max:255',
+            'caption' => 'nullable|string',
+            'category_id' => 'required|integer|exists:categories,id',
+            'price_s' => 'nullable|numeric',
+            'price_l' => 'nullable|numeric',
+            'price_other' => 'nullable|numeric',
+            'is_public' => 'required|in:0,1',
+            'start_at' => 'nullable|date',
+            'end_at' => 'nullable|date',
+            'tags' => 'array',
+            'tags.*' => 'integer|exists:tags,id',
+        ]);
+
+        // 画像ファイル保存
+        $file = $request->file('image');
+        $uploadPath = env('IMAGE_UPLOAD_PATH', public_path('images'));
+        $filename = uniqid('img_') . '.' . $file->getClientOriginalExtension();
+        $file->move($uploadPath, $filename);
+
+        // DB登録
+        $image = new Image();
+        $image->file_path = $filename;
+        $image->title = $validated['title'];
+        $image->caption = $validated['caption'] ?? null;
+        $image->category_id = $validated['category_id'];
+        $image->price_s = $validated['price_s'] ?? null;
+        $image->price_l = $validated['price_l'] ?? null;
+        $image->price_other = $validated['price_other'] ?? null;
+        $image->is_public = $validated['is_public'];
+        $image->start_at = $validated['start_at'] ?? null;
+        $image->end_at = $validated['end_at'] ?? null;
+        $image->save();
+
+        // タグ紐付け
+        if ($request->has('tags')) {
+            $image->tags()->sync($validated['tags']);
+        }
+
+        // レスポンス
+        $image->load(['tags', 'category']);
+        return response()->json([
+            'id' => $image->id,
+            'title' => $image->title,
+            'file_path' => $image->file_path,
+            'alt_text' => $image->alt_text,
+            'caption' => $image->caption,
+            'category_id' => $image->category_id,
+            'category_name' => optional($image->category)->name ?? '',
+            'display_order' => $image->display_order,
+            'is_public' => $image->is_public,
+            'price_s' => $image->price_s,
+            'price_l' => $image->price_l,
+            'price_other' => $image->price_other,
+            'start_at' => $image->start_at,
+            'end_at' => $image->end_at,
+            'tags' => $image->tags ? $image->tags->pluck('id')->values() : [],
+            'created_at' => $image->created_at,
+            'updated_at' => $image->updated_at,
+        ], 201);
+    }
     // 並び順更新API
     public function updateDisplayOrder(Request $request)
     {
