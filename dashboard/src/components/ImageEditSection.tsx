@@ -3,57 +3,59 @@ import ImageEditForm from "./ImageEditForm";
 
 export type ImageItem = {
     id: number;
-    title: string;
-    file_path: string;
-    display_order?: number | null;
-    alt_text?: string;
-    tag_name?: string;
-    category_name?: string;
+    name?: string;
     category_id?: number | null;
-    caption?: string;
+    tags?: number[] | { id: number }[];
     price_s?: number | null;
     price_l?: number | null;
     price_other?: number | null;
-    tags?: number[];
-    is_public?: boolean;
-    start_at?: string;
-    end_at?: string;
+    display_order?: number | null;
+    is_public?: boolean | number;
+    [key: string]: any;
 };
 
-export type Tag = { id: number; name: string };
+export type Category = {
+    id: number;
+    name: string;
+};
 
-interface Props {
+export type Tag = {
+    id: number;
+    name: string;
+};
+
+export type Props = {
     apiOrigin: string;
     images: ImageItem[];
-    categoryList: { id: number; name: string }[];
-    tagList: { id: number; name: string }[];
+    categoryList: Category[];
+    tagList: Tag[];
     onSave: (img: ImageItem) => Promise<void>;
     onDeleted?: () => void;
-}
+};
 
 const ImageEditSection: React.FC<Props> = (props) => {
     const { apiOrigin, images, categoryList, tagList, onSave } = props;
-    // Props未使用警告回避用（参照だけ）
-    void apiOrigin;
-
-    // 編集用state
     const [editImages, setEditImages] = useState<ImageItem[]>([]);
     const [editError, setEditError] = useState<string>("");
     const [editLoading, setEditLoading] = useState<boolean>(false);
+    const [activeEditId, setActiveEditId] = useState<number | null>(null);
 
     useEffect(() => {
-        // imagesのtagsが未定義/nullの場合のみ空配列に補正、配列ならそのまま
         const fixedImages = Array.isArray(images)
             ? images.map((img) => {
-                  if (img.tags === undefined || img.tags === null) {
+                  if (!("tags" in img) || img.tags == null) {
                       return { ...img, tags: [] };
                   }
                   if (
                       Array.isArray(img.tags) &&
                       img.tags.length > 0 &&
-                      typeof img.tags[0] === "object"
+                      typeof img.tags[0] === "object" &&
+                      "id" in img.tags[0]
                   ) {
-                      return { ...img, tags: img.tags.map((t: any) => t.id) };
+                      return {
+                          ...img,
+                          tags: (img.tags as any[]).map((t) => t.id),
+                      };
                   }
                   return img;
               })
@@ -61,7 +63,6 @@ const ImageEditSection: React.FC<Props> = (props) => {
         setEditImages(fixedImages);
     }, [images]);
 
-    // 保存処理
     const handleEditSave = async (img: ImageItem) => {
         setEditLoading(true);
         setEditError("");
@@ -94,10 +95,8 @@ const ImageEditSection: React.FC<Props> = (props) => {
             cleanImg.display_order !== null
         )
             cleanImg.display_order = Number(cleanImg.display_order);
-        // is_publicをDB用に1/0へ変換（boolean→number）
-        if (typeof cleanImg.is_public === "boolean") {
+        if (typeof cleanImg.is_public === "boolean")
             (cleanImg as any).is_public = cleanImg.is_public ? 1 : 0;
-        }
         try {
             await onSave(cleanImg);
         } catch (e: any) {
@@ -107,13 +106,11 @@ const ImageEditSection: React.FC<Props> = (props) => {
         }
     };
 
-    // category_idが厳密に存在する画像のみ表示（null/undefined/0/空文字除外）
-    // 公開・非公開問わず、category_idが存在する画像はすべて表示
-    // category_idが存在し、かつ公開判定を通過した画像のみ表示
-    const filteredImages = editImages.filter(
-        // 設定画面では公開・非公開・公開開始/終了日時に関係なく、category_idが存在する画像はすべて表示
-        (img) => !!img.category_id
-    );
+    const filteredImages = editImages.filter((img) => {
+        if (!!img.category_id) return true;
+        if (activeEditId === img.id) return true;
+        return false;
+    });
 
     return (
         <div className="flex flex-col gap-6">
@@ -131,17 +128,23 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                 key={img.id + "_" + idx}
                                 apiOrigin={apiOrigin}
                                 img={img}
-                                idx={idx}
+                                idx={editImages.findIndex(
+                                    (e) => e.id === img.id
+                                )}
                                 categoryList={categoryList}
                                 tagList={tagList}
                                 onChange={(i: number, newImg: ImageItem) => {
+                                    setActiveEditId(newImg.id);
                                     setEditImages((prev) => {
                                         const next = [...prev];
                                         next[i] = newImg;
                                         return next;
                                     });
                                 }}
-                                onSave={handleEditSave}
+                                onSave={async (img: ImageItem) => {
+                                    await handleEditSave(img);
+                                    setActiveEditId(null);
+                                }}
                                 onDeleted={(deletedImg) => {
                                     if (props.onDeleted) props.onDeleted();
                                     setEditImages((prev) =>
@@ -149,6 +152,7 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                             (i) => i.id !== deletedImg.id
                                         )
                                     );
+                                    setActiveEditId(null);
                                 }}
                                 isLast={idx === filteredImages.length - 1}
                             />

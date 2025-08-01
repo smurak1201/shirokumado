@@ -48,10 +48,7 @@ const ImageEditForm: React.FC<Props> = ({
         }
     };
     const isCategorySelected = !!img.category_id;
-    const isPublic =
-        typeof img.is_public === "boolean"
-            ? img.is_public
-            : img.is_public == 1 || img.is_public == "1";
+    const isPublic = img.is_public === true || img.is_public === 1;
     const altText = img.title;
     return (
         <form
@@ -318,18 +315,53 @@ const ImageEditForm: React.FC<Props> = ({
                                     <input
                                         type="checkbox"
                                         checked={
-                                            img.tags?.includes(tag.id) ?? false
+                                            Array.isArray(img.tags)
+                                                ? typeof img.tags[0] ===
+                                                  "object"
+                                                    ? (
+                                                          img.tags as {
+                                                              id: number;
+                                                          }[]
+                                                      ).some(
+                                                          (t) => t.id === tag.id
+                                                      )
+                                                    : (
+                                                          img.tags as number[]
+                                                      ).includes(tag.id)
+                                                : false
                                         }
                                         onChange={(e) => {
-                                            let tags = img.tags ?? [];
-                                            if (e.target.checked) {
-                                                tags = [...tags, tag.id];
+                                            if (
+                                                Array.isArray(img.tags) &&
+                                                typeof img.tags[0] === "object"
+                                            ) {
+                                                let tags = img.tags as {
+                                                    id: number;
+                                                }[];
+                                                if (e.target.checked) {
+                                                    tags = [
+                                                        ...tags,
+                                                        { id: tag.id },
+                                                    ];
+                                                } else {
+                                                    tags = tags.filter(
+                                                        (t) => t.id !== tag.id
+                                                    );
+                                                }
+                                                onChange(idx, { ...img, tags });
                                             } else {
-                                                tags = tags.filter(
-                                                    (tid) => tid !== tag.id
-                                                );
+                                                let tags =
+                                                    (img.tags as number[]) ??
+                                                    [];
+                                                if (e.target.checked) {
+                                                    tags = [...tags, tag.id];
+                                                } else {
+                                                    tags = tags.filter(
+                                                        (tid) => tid !== tag.id
+                                                    );
+                                                }
+                                                onChange(idx, { ...img, tags });
                                             }
-                                            onChange(idx, { ...img, tags });
                                         }}
                                     />
                                     <span>{tag.name}</span>

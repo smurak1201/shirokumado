@@ -1,15 +1,6 @@
 import React from "react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
-
-type ImageItem = {
-    id: number;
-    title: string;
-    file_path: string;
-    display_order?: number | null;
-    alt_text?: string;
-    tag_name?: string;
-    category_name?: string;
-};
+import type { ImageItem } from "./components/ImageEditSection";
 
 type MenuSectionProps = {
     title: string;

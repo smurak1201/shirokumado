@@ -1,28 +1,10 @@
 import { useEffect, useState } from "react";
+import type { ImageItem } from "./components/ImageEditSection";
 import { DragDropContext } from "@hello-pangea/dnd";
 import MenuSection from "./MenuSection";
 import ImageEditSection from "./components/ImageEditSection";
 import ImageAddForm from "./components/ImageAddForm";
 import Pagination from "./components/Pagination";
-
-type ImageItem = {
-    id: number;
-    title: string;
-    file_path: string;
-    display_order?: number | null;
-    alt_text?: string;
-    tag_name?: string;
-    category_name?: string;
-    category_id?: number | null;
-    caption?: string;
-    price_s?: number | null;
-    price_l?: number | null;
-    price_other?: number | null;
-    tags?: number[];
-    is_public?: boolean;
-    start_at?: string;
-    end_at?: string;
-};
 
 function App() {
     // 設定画面 検索用state
@@ -164,12 +146,24 @@ function App() {
         );
         setLimitedMenu(
             publicImages.filter(
-                (img) => Array.isArray(img.tags) && img.tags.includes(2)
+                (img) =>
+                    Array.isArray(img.tags) &&
+                    img.tags.some(
+                        (t) =>
+                            (typeof t === "number" && t === 2) ||
+                            (typeof t === "object" && "id" in t && t.id === 2)
+                    )
             )
         );
         setNormalMenu(
             publicImages.filter(
-                (img) => Array.isArray(img.tags) && img.tags.includes(1)
+                (img) =>
+                    Array.isArray(img.tags) &&
+                    img.tags.some(
+                        (t) =>
+                            (typeof t === "number" && t === 1) ||
+                            (typeof t === "object" && "id" in t && t.id === 1)
+                    )
             )
         );
         setSideMenu(
