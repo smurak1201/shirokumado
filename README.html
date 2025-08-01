@@ -237,17 +237,19 @@ routes/
 ├── components/                  # UIコンポーネント群
 │   ├── ImageAddForm.tsx         # 画像追加フォーム（ファイルアップロード・バリデーション）
 │   ├── ImageEditForm.tsx        # 画像編集フォーム（削除機能含む）
-│   ├── ImageEditSection.tsx     # 編集セクション全体（複数画像管理）
+│   ├── ImageEditSection.tsx     # 編集セクション（編集・削除・複数画像管理）
+│   ├── ImageSearch.tsx          # タイトル検索UI（normalize・検索コールバック）
+│   ├── ImageSettings.tsx        # 設定統合UI（フィルター・検索・ページネーション・編集連携）
 │   ├── Pagination.tsx           # ページネーション（前後移動・件数表示）
 │   └── SearchFilters.tsx        # 検索フィルター（カテゴリー・タグ・公開状態）
 ├── hooks/                       # カスタムフック群（状態管理・ロジック分離）
 │   ├── useCategoryTags.ts       # カテゴリー・タグ取得
 │   ├── useDisplayOrderUpdate.ts # 並び順DB保存
 │   ├── useImageApi.ts           # 画像API操作（保存・削除）
-│   ├── useImageFiltering.ts     # 画像絞り込みロジック
+│   ├── useImageFiltering.ts     # 画像絞り込みロジック（フィルター・検索・公開状態）
 │   ├── useMenuManagement.ts     # メニュー並び替え・DnD管理
 │   ├── usePagination.ts         # ページネーション管理
-│   ├── useSearchFilters.ts      # 検索フィルター状態管理
+│   ├── useSearchFilters.ts      # 検索フィルター状態管理（カテゴリー・タグ・公開状態）
 │   └── useTabManagement.ts      # タブ状態管理（LocalStorage永続化）
 ├── constants/                   # 定数定義
 │   └── tags.ts                  # タグID・カテゴリー名・タブ定数
@@ -259,22 +261,26 @@ routes/
       <li><strong>カスタムフックによる責任分離</strong>
         <ul>
           <li>UI（JSX）とロジック（状態管理・API）を分離</li>
-          <li>機能単位でフックを作成し、再利用性を向上</li>
+          <li>機能単位でフックを作成し、再利用性・保守性を向上</li>
+          <li>例: <code>useImageFiltering</code>（フィルター・検索・公開状態の絞り込み）、<code>useSearchFilters</code>（フィルター状態管理）、<code>usePagination</code>（ページネーション管理）</li>
         </ul>
       </li>
       <li><strong>コンポーネント設計</strong>
         <ul>
-          <li>単一責任の原則（1 つのコンポーネント = 1 つの機能）</li>
-          <li>Props 型定義による型安全性</li>
-          <li>React.memo によるパフォーマンス最適化</li>
+          <li>単一責任の原則（1コンポーネント=1機能）</li>
+          <li>Props型定義による型安全性</li>
+          <li>React.memoによるパフォーマンス最適化</li>
+          <li><code>ImageSearch</code>（タイトル検索UI）、<code>ImageSettings</code>（設定統合UI）など、機能ごとに分割</li>
         </ul>
       </li>
-      <li><strong>ファイル読解の推奨順序</strong>
+      <li><strong>ファイル読解の推奨順序（2025年8月版）</strong>
         <ol>
-          <li><code>dashboard/src/App.tsx</code> - 全体構成を把握</li>
-          <li><code>dashboard/src/hooks/</code> - 状態管理パターンを学習</li>
-          <li><code>dashboard/src/components/</code> - UI 部品の構成を確認</li>
-          <li><code>dashboard/src/constants/</code> <code>dashboard/src/utils/</code> - 共通ロジックを確認</li>
+          <li><code>dashboard/src/App.tsx</code> - 全体構成・画面遷移・データ取得</li>
+          <li><code>dashboard/src/components/ImageSettings.tsx</code> - 設定統合UI（フィルター・検索・ページネーション・編集連携）</li>
+          <li><code>dashboard/src/components/ImageSearch.tsx</code> - タイトル検索UI・normalizeロジック</li>
+          <li><code>dashboard/src/hooks/</code> - 状態管理・ロジック分離パターン</li>
+          <li><code>dashboard/src/components/</code> - UI部品の構成</li>
+          <li><code>dashboard/src/constants/</code> <code>dashboard/src/utils/</code> - 共通ロジック・定数</li>
         </ol>
       </li>
     </ol>

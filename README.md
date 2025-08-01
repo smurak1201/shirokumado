@@ -133,53 +133,86 @@ routes/
 
 ### ディレクトリ構成と役割
 
-```
 dashboard/src/
-├── App.tsx                      # メインコンポーネント（全体の状態管理・画面構成）
-├── MenuSection.tsx              # 並び替えセクション（DnD対応）
-├── main.tsx                     # Reactエントリポイント
-├── index.css                    # グローバルスタイル
-├── vite-env.d.ts                # Vite型定義
-├── components/                  # UIコンポーネント群
-│   ├── ImageAddForm.tsx         # 画像追加フォーム（ファイルアップロード・バリデーション）
-│   ├── ImageEditForm.tsx        # 画像編集フォーム（削除機能含む）
-│   ├── ImageEditSection.tsx     # 編集セクション全体（複数画像管理）
-│   ├── Pagination.tsx           # ページネーション（前後移動・件数表示）
-│   └── SearchFilters.tsx        # 検索フィルター（カテゴリー・タグ・公開状態）
-├── hooks/                       # カスタムフック群（状態管理・ロジック分離）
-│   ├── useCategoryTags.ts       # カテゴリー・タグ取得
-│   ├── useDisplayOrderUpdate.ts # 並び順DB保存
-│   ├── useImageApi.ts           # 画像API操作（保存・削除）
-│   ├── useImageFiltering.ts     # 画像絞り込みロジック
-│   ├── useMenuManagement.ts     # メニュー並び替え・DnD管理
-│   ├── usePagination.ts         # ページネーション管理
-│   ├── useSearchFilters.ts      # 検索フィルター状態管理
-│   └── useTabManagement.ts      # タブ状態管理（LocalStorage永続化）
-├── constants/                   # 定数定義
-│   └── tags.ts                  # タグID・カテゴリー名・タブ定数
-└── utils/                       # ユーティリティ関数
-    └── imageFilters.ts          # 画像フィルタリング関数群
+├── App.tsx # メインコンポーネント（全体の状態管理・画面構成）
+├── MenuSection.tsx # 並び替えセクション（DnD 対応）
+├── main.tsx # React エントリポイント
+├── index.css # グローバルスタイル
+├── vite-env.d.ts # Vite 型定義
+├── components/ # UI コンポーネント群
+│ ├── ImageAddForm.tsx # 画像追加フォーム（ファイルアップロード・バリデーション）
+│ ├── ImageEditForm.tsx # 画像編集フォーム（削除機能含む）
+│ ├── ImageEditSection.tsx # 編集セクション全体（複数画像管理）
+│ ├── Pagination.tsx # ページネーション（前後移動・件数表示）
+│ └── SearchFilters.tsx # 検索フィルター（カテゴリー・タグ・公開状態）
+├── hooks/ # カスタムフック群（状態管理・ロジック分離）
+│ ├── useCategoryTags.ts # カテゴリー・タグ取得
+│ ├── useDisplayOrderUpdate.ts # 並び順 DB 保存
+│ ├── useImageApi.ts # 画像 API 操作（保存・削除）
+│ ├── useImageFiltering.ts # 画像絞り込みロジック
+│ ├── useMenuManagement.ts # メニュー並び替え・DnD 管理
+│ ├── usePagination.ts # ページネーション管理
+│ ├── useSearchFilters.ts # 検索フィルター状態管理
+│ └── useTabManagement.ts # タブ状態管理（LocalStorage 永続化）
+├── constants/ # 定数定義
+│ └── tags.ts # タグ ID・カテゴリー名・タブ定数
+└── utils/ # ユーティリティ関数
+└── imageFilters.ts # 画像フィルタリング関数群
+
+```
+
+```
+
+dashboard/src/
+├── App.tsx # メインコンポーネント（全体の状態管理・画面構成）
+├── MenuSection.tsx # 並び替えセクション（DnD 対応）
+├── main.tsx # React エントリポイント
+├── index.css # グローバルスタイル
+├── vite-env.d.ts # Vite 型定義
+├── components/ # UI コンポーネント群
+│ ├── ImageAddForm.tsx # 画像追加フォーム（ファイルアップロード・バリデーション）
+│ ├── ImageEditForm.tsx # 画像編集フォーム（削除機能含む）
+│ ├── ImageEditSection.tsx # 編集セクション（編集・削除・複数画像管理）
+│ ├── ImageSearch.tsx # タイトル検索 UI（normalize・検索コールバック）
+│ ├── ImageSettings.tsx # 設定統合 UI（フィルター・検索・ページネーション・編集連携）
+│ ├── Pagination.tsx # ページネーション（前後移動・件数表示）
+│ └── SearchFilters.tsx # 検索フィルター（カテゴリー・タグ・公開状態）
+├── hooks/ # カスタムフック群（状態管理・ロジック分離）
+│ ├── useCategoryTags.ts # カテゴリー・タグ取得
+│ ├── useDisplayOrderUpdate.ts # 並び順 DB 保存
+│ ├── useImageApi.ts # 画像 API 操作（保存・削除）
+│ ├── useImageFiltering.ts # 画像絞り込みロジック（フィルター・検索・公開状態）
+│ ├── useMenuManagement.ts # メニュー並び替え・DnD 管理
+│ ├── usePagination.ts # ページネーション管理
+│ ├── useSearchFilters.ts # 検索フィルター状態管理（カテゴリー・タグ・公開状態）
+│ └── useTabManagement.ts # タブ状態管理（LocalStorage 永続化）
+├── constants/ # 定数定義
+│ └── tags.ts # タグ ID・カテゴリー名・タブ定数
+└── utils/ # ユーティリティ関数
+└── imageFilters.ts # 画像フィルタリング関数群
+
 ```
 
 ### 設計の考え方
 
 **1. カスタムフックによる責任分離**
-
--   UI（JSX）とロジック（状態管理・API）を分離
--   機能単位でフックを作成し、再利用性を向上
+- UI（JSX）とロジック（状態管理・API）を分離
+- 機能単位でフックを作成し、再利用性・保守性を向上
+- 例: useImageFiltering（フィルター・検索・公開状態の絞り込み）、useSearchFilters（フィルター状態管理）、usePagination（ページネーション管理）
 
 **2. コンポーネント設計**
+- 単一責任の原則（1コンポーネント=1機能）
+- Props型定義による型安全性
+- React.memoによるパフォーマンス最適化
+- ImageSearch（タイトル検索UI）、ImageSettings（設定統合UI）など、機能ごとに分割
 
--   単一責任の原則（1 つのコンポーネント = 1 つの機能）
--   Props 型定義による型安全性
--   React.memo によるパフォーマンス最適化
-
-**3. ファイル読解の推奨順序**
-
-1. `dashboard/src/App.tsx` - 全体構成を把握
-2. `dashboard/src/hooks/` - 状態管理パターンを学習
-3. `dashboard/src/components/` - UI 部品の構成を確認
-4. `dashboard/src/constants/` `dashboard/src/utils/` - 共通ロジックを確認
+**3. ファイル読解の推奨順序（2025年8月版）**
+1. `dashboard/src/App.tsx` - 全体構成・画面遷移・データ取得
+2. `dashboard/src/components/ImageSettings.tsx` - 設定統合UI（フィルター・検索・ページネーション・編集連携）
+3. `dashboard/src/components/ImageSearch.tsx` - タイトル検索UI・normalizeロジック
+4. `dashboard/src/hooks/` - 状態管理・ロジック分離パターン
+5. `dashboard/src/components/` - UI部品の構成
+6. `dashboard/src/constants/` `dashboard/src/utils/` - 共通ロジック・定数
 
 ---
 
@@ -212,3 +245,4 @@ dashboard/src/
 ### ライセンス
 
 MIT License
+```
