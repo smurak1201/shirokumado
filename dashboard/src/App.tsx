@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { ImageItem } from "./components/ImageEditSection";
 import { DragDropContext } from "@hello-pangea/dnd";
 import MenuSection from "./MenuSection";
@@ -6,15 +6,37 @@ import ImageEditSection from "./components/ImageEditSection";
 import ImageAddForm from "./components/ImageAddForm";
 import Pagination from "./components/Pagination";
 import { TAB_INDICES, TAB_LABELS } from "./constants/tags";
-import { useMenuSort } from "./hooks/useMenuSort";
 import { useSearchFilters } from "./hooks/useSearchFilters";
 import { useImageFiltering } from "./hooks/useImageFiltering";
 import { useImageApi } from "./hooks/useImageApi";
-import { filterImages } from "./utils/imageFilters";
+import { useCategoryTags } from "./hooks/useCategoryTags";
+import { useMenuManagement } from "./hooks/useMenuManagement";
+import { useTabManagement } from "./hooks/useTabManagement";
+import { usePagination } from "./hooks/usePagination";
 import SearchFiltersComponent from "./components/SearchFilters";
 
 function App() {
-    // 検索フィルター用のカスタムフック
+    const apiOrigin = import.meta.env.VITE_API_ORIGIN;
+
+    // 画像データ管理
+    const [editImages, setEditImages] = useState<ImageItem[]>([]);
+
+    // 画像データ取得（メモ化）
+    const fetchImages = useCallback(async () => {
+        const res = await fetch(`${apiOrigin}/api/images`);
+        if (res.ok) {
+            const data = await res.json();
+            setEditImages(data);
+        }
+    }, [apiOrigin]);
+
+    // カスタムフック群
+    const { activeTab, handleTabChange } = useTabManagement();
+    const { categoryList, tagList } = useCategoryTags(apiOrigin);
+    const { saveImage, handleImageDeleted } = useImageApi(
+        apiOrigin,
+        fetchImages
+    );
     const {
         setSearchCategory,
         setSearchPublic,
@@ -22,167 +44,19 @@ function App() {
         resetFilters,
         updateTagFilter,
     } = useSearchFilters();
-
-    // 設定画面ページネーション用
-    const [editPage, setEditPage] = useState(1);
-    const editPageSize = 10;
-    // タブ状態: 0=配置登録, 1=登録内容変更, 2=新規追加
-    const [activeTab, setActiveTab] = useState<number>(() => {
-        const saved = window.localStorage.getItem("activeTab");
-        return saved !== null ? Number(saved) : 0;
-    });
-    const apiOrigin = import.meta.env.VITE_API_ORIGIN;
-
-    // 並び替え用state（各カテゴリごと）
-    const [limitedMenu, setLimitedMenu] = useState<ImageItem[]>([]);
-    const [normalMenu, setNormalMenu] = useState<ImageItem[]>([]);
-    const [sideMenu, setSideMenu] = useState<ImageItem[]>([]);
-
-    // 並び順トグル用のカスタムフック
-    const {
-        limitedAsc,
-        normalAsc,
-        sideAsc,
-        setLimitedAsc,
-        setNormalAsc,
-        setSideAsc,
-        createSortHandler,
-    } = useMenuSort();
-
-    // 画像一覧を一元管理
-    const [editImages, setEditImages] = useState<ImageItem[]>([]);
-
-    // 画像データ取得（初回・追加・編集・削除時に再利用）
-    const fetchImages = async () => {
-        const res = await fetch(`${apiOrigin}/api/images`);
-        if (res.ok) {
-            const data = await res.json();
-            setEditImages(data);
-        }
-    };
-
-    // 画像API操作用のカスタムフック
-    const { saveImage, handleImageDeleted } = useImageApi(
-        apiOrigin,
-        fetchImages
-    );
-
-    // 画像フィルタリング用のカスタムフック
     const { filteredImages } = useImageFiltering(editImages, filters);
-    // カテゴリー一覧
-    const [categoryList, setCategoryList] = useState<
-        { id: number; name: string }[]
-    >([]);
-    // タグ一覧
-    const [tagList, setTagList] = useState<{ id: number; name: string }[]>([]);
-
-    // カテゴリー一覧取得
-    useEffect(() => {
-        fetch(`${apiOrigin}/api/categories`)
-            .then((res) => (res.ok ? res.json() : []))
-            .then((data) => setCategoryList(data))
-            .catch(() => setCategoryList([]));
-        fetch(`${apiOrigin}/api/tags`)
-            .then((res) => (res.ok ? res.json() : []))
-            .then((data) => setTagList(data))
-            .catch(() => setTagList([]));
-    }, [apiOrigin]);
-    // DnD並び替え用
-    const onDragEnd = (result: any) => {
-        if (!result.destination) return;
-        const { source, destination } = result;
-        let items: ImageItem[] = [];
-        let setItems: React.Dispatch<React.SetStateAction<ImageItem[]>>;
-        if (source.droppableId === "limitedMenu") {
-            items = Array.from(limitedMenu);
-            setItems = setLimitedMenu;
-        } else if (source.droppableId === "normalMenu") {
-            items = Array.from(normalMenu);
-            setItems = setNormalMenu;
-        } else if (source.droppableId === "sideMenu") {
-            items = Array.from(sideMenu);
-            setItems = setSideMenu;
-        } else {
-            return;
-        }
-        const [removed] = items.splice(source.index, 1);
-        items.splice(destination.index, 0, removed);
-        setItems(items);
-    };
-
-    // 初回・タブ切り替え時に画像一覧取得
+    const { menuData, createSortHandler, updateDisplayOrder, handleDragEnd } =
+        useMenuManagement(editImages, apiOrigin);
+    const {
+        currentPage: editPage,
+        setCurrentPage: setEditPage,
+        paginatedItems,
+        resetPage,
+    } = usePagination(filteredImages, 10);
+    // 初回データ取得
     useEffect(() => {
         fetchImages();
-    }, [apiOrigin]);
-
-    // 並び替えボタン用のハンドラー
-    const handleLimitedSort = createSortHandler(
-        limitedMenu,
-        setLimitedMenu,
-        limitedAsc,
-        setLimitedAsc
-    );
-    const handleNormalSort = createSortHandler(
-        normalMenu,
-        setNormalMenu,
-        normalAsc,
-        setNormalAsc
-    );
-    const handleSideSort = createSortHandler(
-        sideMenu,
-        setSideMenu,
-        sideAsc,
-        setSideAsc
-    );
-
-    // 並び順をDBに登録する関数
-    const updateDisplayOrder = async (
-        menuType: "limitedMenu" | "normalMenu" | "sideMenu",
-        showAlert: boolean = true
-    ) => {
-        let items: ImageItem[] = [];
-        if (menuType === "limitedMenu") items = limitedMenu;
-        else if (menuType === "normalMenu") items = normalMenu;
-        else if (menuType === "sideMenu") items = sideMenu;
-        const payload = items.map((item, idx) => ({
-            id: item.id,
-            display_order: idx + 1,
-        }));
-        try {
-            const res = await fetch(`${apiOrigin}/api/images/display-order`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orders: payload }),
-            });
-            if (!res.ok) throw new Error("DB更新に失敗しました");
-            if (showAlert) alert("並び順を保存しました");
-        } catch (e) {
-            if (showAlert) alert("DB更新に失敗しました");
-        }
-    };
-
-    // editImagesが変化したら各メニューstateも再計算し即時反映
-    useEffect(() => {
-        const publicImages = filterImages.publicOnly(editImages);
-        setLimitedMenu(filterImages.limitedMenu(publicImages));
-        setNormalMenu(filterImages.normalMenu(publicImages));
-        setSideMenu(filterImages.sideMenu(publicImages));
-    }, [editImages]);
-
-    // 並び順自動登録: editImagesが変化した直後に各メニューの並び順をDBに自動登録
-    useEffect(() => {
-        // 並び順登録は各メニューstateが更新された直後に行う（自動登録時はアラートなし）
-        if (limitedMenu.length > 0) {
-            updateDisplayOrder("limitedMenu", false);
-        }
-        if (normalMenu.length > 0) {
-            updateDisplayOrder("normalMenu", false);
-        }
-        if (sideMenu.length > 0) {
-            updateDisplayOrder("sideMenu", false);
-        }
-        // eslint-disable-next-line
-    }, [limitedMenu, normalMenu, sideMenu]);
+    }, [fetchImages]);
 
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8 min-h-[900px]">
@@ -201,13 +75,7 @@ function App() {
                                 }
                             `}
                             style={{ background: "none" }}
-                            onClick={() => {
-                                setActiveTab(idx);
-                                window.localStorage.setItem(
-                                    "activeTab",
-                                    String(idx)
-                                );
-                            }}
+                            onClick={() => handleTabChange(idx)}
                         >
                             {label}
                         </button>
@@ -217,40 +85,40 @@ function App() {
 
             {/* タブごとの画面 */}
             {activeTab === TAB_INDICES.ARRANGEMENT && (
-                <DragDropContext onDragEnd={onDragEnd}>
+                <DragDropContext onDragEnd={handleDragEnd}>
                     <div className="flex flex-row gap-4">
                         <MenuSection
                             title="限定メニュー"
-                            items={limitedMenu}
+                            items={menuData.limitedMenu.items}
                             apiOrigin={apiOrigin}
                             droppableId="limitedMenu"
                             droppableType="limited"
-                            sortAsc={limitedAsc}
-                            onToggleSort={handleLimitedSort}
+                            sortAsc={menuData.limitedMenu.isAsc}
+                            onToggleSort={createSortHandler("limitedMenu")}
                             onRegisterOrder={async () =>
                                 await updateDisplayOrder("limitedMenu", true)
                             }
                         />
                         <MenuSection
                             title="通常メニュー"
-                            items={normalMenu}
+                            items={menuData.normalMenu.items}
                             apiOrigin={apiOrigin}
                             droppableId="normalMenu"
                             droppableType="normal"
-                            sortAsc={normalAsc}
-                            onToggleSort={handleNormalSort}
+                            sortAsc={menuData.normalMenu.isAsc}
+                            onToggleSort={createSortHandler("normalMenu")}
                             onRegisterOrder={async () =>
                                 await updateDisplayOrder("normalMenu", true)
                             }
                         />
                         <MenuSection
                             title="サイドメニュー"
-                            items={sideMenu}
+                            items={menuData.sideMenu.items}
                             apiOrigin={apiOrigin}
                             droppableId="sideMenu"
                             droppableType="side"
-                            sortAsc={sideAsc}
-                            onToggleSort={handleSideSort}
+                            sortAsc={menuData.sideMenu.isAsc}
+                            onToggleSort={createSortHandler("sideMenu")}
                             onRegisterOrder={async () =>
                                 await updateDisplayOrder("sideMenu", true)
                             }
@@ -266,7 +134,6 @@ function App() {
                     <p className="mb-2 text-sm text-gray-500">
                         画像のタイトルやタグなどを編集できます。
                     </p>
-                    {/* 検索UI */}
                     <SearchFiltersComponent
                         categoryList={categoryList}
                         tagList={tagList}
@@ -275,28 +142,22 @@ function App() {
                         onPublicChange={setSearchPublic}
                         onTagChange={updateTagFilter}
                         onReset={resetFilters}
-                        onPageReset={() => setEditPage(1)}
+                        onPageReset={resetPage}
                     />
-                    {/* 絞り込みロジック */}
-                    <>
-                        <Pagination
-                            current={editPage}
-                            total={filteredImages.length}
-                            pageSize={editPageSize}
-                            onChange={setEditPage}
-                        />
-                        <ImageEditSection
-                            apiOrigin={apiOrigin}
-                            images={filteredImages.slice(
-                                editPageSize * (editPage - 1),
-                                editPageSize * editPage
-                            )}
-                            categoryList={categoryList}
-                            tagList={tagList}
-                            onSave={saveImage}
-                            onDeleted={handleImageDeleted}
-                        />
-                    </>
+                    <Pagination
+                        current={editPage}
+                        total={filteredImages.length}
+                        pageSize={10}
+                        onChange={setEditPage}
+                    />
+                    <ImageEditSection
+                        apiOrigin={apiOrigin}
+                        images={paginatedItems}
+                        categoryList={categoryList}
+                        tagList={tagList}
+                        onSave={saveImage}
+                        onDeleted={handleImageDeleted}
+                    />
                 </div>
             )}
             {activeTab === TAB_INDICES.ADD && (
@@ -311,9 +172,7 @@ function App() {
                         apiOrigin={apiOrigin}
                         categoryList={categoryList}
                         tagList={tagList}
-                        onAdded={async () => {
-                            await fetchImages();
-                        }}
+                        onAdded={fetchImages}
                     />
                 </div>
             )}
