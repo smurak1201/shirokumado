@@ -132,7 +132,8 @@ function App() {
 
     // 並び順をDBに登録する関数
     const updateDisplayOrder = async (
-        menuType: "limitedMenu" | "normalMenu" | "sideMenu"
+        menuType: "limitedMenu" | "normalMenu" | "sideMenu",
+        showAlert: boolean = true
     ) => {
         let items: ImageItem[] = [];
         if (menuType === "limitedMenu") items = limitedMenu;
@@ -149,9 +150,9 @@ function App() {
                 body: JSON.stringify({ orders: payload }),
             });
             if (!res.ok) throw new Error("DB更新に失敗しました");
-            alert("並び順を保存しました");
+            if (showAlert) alert("並び順を保存しました");
         } catch (e) {
-            alert("DB更新に失敗しました");
+            if (showAlert) alert("DB更新に失敗しました");
         }
     };
 
@@ -178,15 +179,15 @@ function App() {
 
     // 並び順自動登録: editImagesが変化した直後に各メニューの並び順をDBに自動登録
     useEffect(() => {
-        // 並び順登録は各メニューstateが更新された直後に行う
+        // 並び順登録は各メニューstateが更新された直後に行う（自動登録時はアラートなし）
         if (limitedMenu.length > 0) {
-            updateDisplayOrder("limitedMenu");
+            updateDisplayOrder("limitedMenu", false);
         }
         if (normalMenu.length > 0) {
-            updateDisplayOrder("normalMenu");
+            updateDisplayOrder("normalMenu", false);
         }
         if (sideMenu.length > 0) {
-            updateDisplayOrder("sideMenu");
+            updateDisplayOrder("sideMenu", false);
         }
         // eslint-disable-next-line
     }, [limitedMenu, normalMenu, sideMenu]);
@@ -235,7 +236,7 @@ function App() {
                             sortAsc={limitedAsc}
                             onToggleSort={handleLimitedSort}
                             onRegisterOrder={async () =>
-                                await updateDisplayOrder("limitedMenu")
+                                await updateDisplayOrder("limitedMenu", true)
                             }
                         />
                         <MenuSection
@@ -247,7 +248,7 @@ function App() {
                             sortAsc={normalAsc}
                             onToggleSort={handleNormalSort}
                             onRegisterOrder={async () =>
-                                await updateDisplayOrder("normalMenu")
+                                await updateDisplayOrder("normalMenu", true)
                             }
                         />
                         <MenuSection
@@ -259,7 +260,7 @@ function App() {
                             sortAsc={sideAsc}
                             onToggleSort={handleSideSort}
                             onRegisterOrder={async () =>
-                                await updateDisplayOrder("sideMenu")
+                                await updateDisplayOrder("sideMenu", true)
                             }
                         />
                     </div>
