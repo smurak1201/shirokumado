@@ -176,6 +176,21 @@ function App() {
         );
     }, [editImages]);
 
+    // 並び順自動登録: editImagesが変化した直後に各メニューの並び順をDBに自動登録
+    useEffect(() => {
+        // 並び順登録は各メニューstateが更新された直後に行う
+        if (limitedMenu.length > 0) {
+            updateDisplayOrder("limitedMenu");
+        }
+        if (normalMenu.length > 0) {
+            updateDisplayOrder("normalMenu");
+        }
+        if (sideMenu.length > 0) {
+            updateDisplayOrder("sideMenu");
+        }
+        // eslint-disable-next-line
+    }, [limitedMenu, normalMenu, sideMenu]);
+
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8 min-h-[900px]">
             {/* タブUI */}
@@ -433,20 +448,6 @@ function App() {
                             await fetchImages();
                         }}
                     />
-                </div>
-            )}
-            {activeTab === 2 && (
-                <div className="bg-white rounded-3xl p-6 shadow-sm">
-                    <h2 className="text-lg font-bold mb-4 text-gray-700">
-                        追加
-                    </h2>
-                    <p className="mb-2 text-sm text-gray-500">
-                        新しい画像を登録できます（仮UI）。
-                    </p>
-                    {/* ここに新規追加フォームを追加 */}
-                    <div className="text-gray-400 text-sm">
-                        ※この画面のUIは今後拡張可能です
-                    </div>
                 </div>
             )}
         </main>
