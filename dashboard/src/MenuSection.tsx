@@ -1,5 +1,24 @@
+/**
+ * MenuSection.tsx
+ *
+ * 画像メニューの並び替え・表示セクション。
+ * Drag & Dropで並び順を変更し、DB登録も可能。
+ *
+ * 主な機能:
+ * - 画像リストの表示
+ * - 並び替え（DnD）
+ * - 並び順の保存
+ *
+ * 利用技術:
+ * - React関数コンポーネント
+ * - @hello-pangea/dnd（DnDライブラリ）
+ */
+
+// React本体
 import React from "react";
+// DnD用コンポーネント
 import { Droppable, Draggable } from "@hello-pangea/dnd";
+// 画像メニュー型定義
 import type { ImageItem } from "./components/ImageEditSection";
 
 type MenuSectionProps = {

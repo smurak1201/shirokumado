@@ -1,3 +1,14 @@
+
+/**
+ * useDisplayOrderUpdate.ts
+ *
+ * 並び順をDBに保存するカスタムフック。
+ * メニュー並び替え時に利用。
+ *
+ * 利用技術:
+ * - useCallback
+ */
+
 import { useCallback } from "react";
 
 /**

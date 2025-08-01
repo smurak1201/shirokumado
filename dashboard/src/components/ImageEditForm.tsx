@@ -1,4 +1,22 @@
+/**
+ * ImageEditForm.tsx
+ *
+ * 画像メニューの編集フォーム。
+ * タイトル・価格・タグ・カテゴリーなどを編集し、API経由で保存・削除可能。
+ *
+ * 主な機能:
+ * - 画像情報の編集
+ * - 削除（API連携）
+ * - 入力値のバリデーション
+ *
+ * 利用技術:
+ * - React関数コンポーネント
+ * - useState
+ */
+
+// React本体
 import React from "react";
+// 画像メニュー型・タグ型定義
 import type { ImageItem, Tag } from "./ImageEditSection";
 
 interface Props {

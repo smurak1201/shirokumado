@@ -1,3 +1,18 @@
+/**
+ * Pagination.tsx
+ *
+ * ページネーションUIコンポーネント。
+ * 一覧表示のページ切り替えを管理。
+ *
+ * 主な機能:
+ * - ページ番号・件数表示
+ * - 前後ページへの移動
+ *
+ * 利用技術:
+ * - React関数コンポーネント
+ */
+
+// React本体
 import React from "react";
 
 interface PaginationProps {

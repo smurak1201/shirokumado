@@ -1,3 +1,14 @@
+
+/**
+ * useCategoryTags.ts
+ *
+ * カテゴリー・タグ一覧をAPIから取得するカスタムフック。
+ * 画面表示や検索UIで利用。
+ *
+ * 利用技術:
+ * - useState, useEffect
+ */
+
 import { useState, useEffect } from "react";
 
 /**

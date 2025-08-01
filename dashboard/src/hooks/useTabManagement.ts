@@ -1,3 +1,14 @@
+
+/**
+ * useTabManagement.ts
+ *
+ * タブ状態管理用カスタムフック。
+ * ローカルストレージでタブ状態を永続化。
+ *
+ * 利用技術:
+ * - useState, useCallback
+ */
+
 import { useState, useCallback } from "react";
 
 /**

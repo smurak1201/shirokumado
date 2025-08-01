@@ -1,3 +1,11 @@
+
+/**
+ * imageFilters.ts
+ *
+ * 画像リストのフィルタリング・タグ判定ユーティリティ。
+ * 公開・限定・通常・サイドメニュー抽出など。
+ */
+
 import type { ImageItem } from "../components/ImageEditSection";
 import { TAG_IDS, CATEGORY_NAMES } from "../constants/tags";
 

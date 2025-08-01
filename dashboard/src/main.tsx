@@ -1,3 +1,14 @@
+/**
+ * main.tsx
+ *
+ * Reactアプリのエントリポイント。
+ * Appコンポーネントをルート要素にマウント。
+ *
+ * 利用技術:
+ * - ReactDOM.createRoot
+ * - React.StrictMode
+ */
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";

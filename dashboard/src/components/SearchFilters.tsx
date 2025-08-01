@@ -1,4 +1,22 @@
+/**
+ * SearchFilters.tsx
+ *
+ * 検索・絞り込みUIコンポーネント。
+ * カテゴリー・タグ・公開状態で画像リストを絞り込み。
+ *
+ * 主な機能:
+ * - カテゴリー・タグ・公開状態の選択
+ * - フィルターリセット
+ * - ページリセット
+ *
+ * 利用技術:
+ * - React.memo
+ * - useCallback
+ */
+
+// React本体
 import React, { useCallback } from "react";
+// 検索フィルター型定義
 import type { SearchFilters } from "../hooks/useSearchFilters";
 
 interface Props {

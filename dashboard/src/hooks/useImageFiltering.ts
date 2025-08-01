@@ -1,3 +1,14 @@
+
+/**
+ * useImageFiltering.ts
+ *
+ * 画像リストの絞り込み（検索・タグ・公開状態）用カスタムフック。
+ * useMemoでパフォーマンス最適化。
+ *
+ * 利用技術:
+ * - useMemo
+ */
+
 import { useMemo } from "react";
 import type { ImageItem } from "../components/ImageEditSection";
 import type { SearchFilters } from "../hooks/useSearchFilters";

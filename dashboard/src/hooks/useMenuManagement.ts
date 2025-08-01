@@ -1,3 +1,14 @@
+
+/**
+ * useMenuManagement.ts
+ *
+ * 画像メニューの並び替え・DnD・DB保存を一括管理するカスタムフック。
+ * useMemo, useCallbackでパフォーマンス最適化。
+ *
+ * 利用技術:
+ * - useState, useEffect, useCallback, useMemo
+ */
+
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { ImageItem } from "../components/ImageEditSection";
 import { filterImages } from "../utils/imageFilters";

@@ -1,4 +1,22 @@
+/**
+ * ImageEditSection.tsx
+ *
+ * 画像メニュー編集セクション。
+ * 複数画像の編集フォームをリスト表示し、編集・保存・削除を一括管理。
+ *
+ * 主な機能:
+ * - 画像リストの編集
+ * - 編集フォームの表示・管理
+ * - 入力値の型変換・バリデーション
+ *
+ * 利用技術:
+ * - React関数コンポーネント
+ * - useState, useEffect
+ */
+
+// React本体
 import React, { useState, useEffect } from "react";
+// 画像編集フォーム
 import ImageEditForm from "./ImageEditForm";
 
 export type ImageItem = {

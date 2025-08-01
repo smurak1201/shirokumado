@@ -1,3 +1,14 @@
+
+/**
+ * useImageApi.ts
+ *
+ * 画像API操作（保存・削除）用カスタムフック。
+ * 編集・追加・削除時にAPI連携。
+ *
+ * 利用技術:
+ * - useCallback
+ */
+
 import { useCallback } from "react";
 import type { ImageItem } from "../components/ImageEditSection";
 

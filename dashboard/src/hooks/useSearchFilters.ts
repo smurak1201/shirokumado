@@ -1,3 +1,14 @@
+
+/**
+ * useSearchFilters.ts
+ *
+ * 検索・絞り込み状態管理用カスタムフック。
+ * カテゴリー・タグ・公開状態の選択・リセット。
+ *
+ * 利用技術:
+ * - useState, useMemo, useCallback
+ */
+
 import { useState, useMemo, useCallback } from "react";
 
 export type SearchFilters = {
