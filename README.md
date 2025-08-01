@@ -135,30 +135,30 @@ routes/
 
 ```
 dashboard/src/
-├── App.tsx                 # メインコンポーネント（全体の状態管理・画面構成）
-├── MenuSection.tsx         # 並び替えセクション（DnD対応）
-├── main.tsx               # Reactエントリポイント
-├── index.css              # グローバルスタイル
-├── vite-env.d.ts          # Vite型定義
-├── components/            # UIコンポーネント群
-│   ├── ImageAddForm.tsx       # 画像追加フォーム（ファイルアップロード・バリデーション）
-│   ├── ImageEditForm.tsx      # 画像編集フォーム（削除機能含む）
-│   ├── ImageEditSection.tsx   # 編集セクション全体（複数画像管理）
-│   ├── Pagination.tsx         # ページネーション（前後移動・件数表示）
-│   └── SearchFilters.tsx      # 検索フィルター（カテゴリー・タグ・公開状態）
-├── hooks/                 # カスタムフック群（状態管理・ロジック分離）
-│   ├── useCategoryTags.ts     # カテゴリー・タグ取得
+├── App.tsx                      # メインコンポーネント（全体の状態管理・画面構成）
+├── MenuSection.tsx              # 並び替えセクション（DnD対応）
+├── main.tsx                     # Reactエントリポイント
+├── index.css                    # グローバルスタイル
+├── vite-env.d.ts                # Vite型定義
+├── components/                  # UIコンポーネント群
+│   ├── ImageAddForm.tsx         # 画像追加フォーム（ファイルアップロード・バリデーション）
+│   ├── ImageEditForm.tsx        # 画像編集フォーム（削除機能含む）
+│   ├── ImageEditSection.tsx     # 編集セクション全体（複数画像管理）
+│   ├── Pagination.tsx           # ページネーション（前後移動・件数表示）
+│   └── SearchFilters.tsx        # 検索フィルター（カテゴリー・タグ・公開状態）
+├── hooks/                       # カスタムフック群（状態管理・ロジック分離）
+│   ├── useCategoryTags.ts       # カテゴリー・タグ取得
 │   ├── useDisplayOrderUpdate.ts # 並び順DB保存
-│   ├── useImageApi.ts         # 画像API操作（保存・削除）
-│   ├── useImageFiltering.ts   # 画像絞り込みロジック
-│   ├── useMenuManagement.ts   # メニュー並び替え・DnD管理
-│   ├── usePagination.ts       # ページネーション管理
-│   ├── useSearchFilters.ts    # 検索フィルター状態管理
-│   └── useTabManagement.ts    # タブ状態管理（LocalStorage永続化）
-├── constants/             # 定数定義
-│   └── tags.ts                # タグID・カテゴリー名・タブ定数
-└── utils/                 # ユーティリティ関数
-    └── imageFilters.ts        # 画像フィルタリング関数群
+│   ├── useImageApi.ts           # 画像API操作（保存・削除）
+│   ├── useImageFiltering.ts     # 画像絞り込みロジック
+│   ├── useMenuManagement.ts     # メニュー並び替え・DnD管理
+│   ├── usePagination.ts         # ページネーション管理
+│   ├── useSearchFilters.ts      # 検索フィルター状態管理
+│   └── useTabManagement.ts      # タブ状態管理（LocalStorage永続化）
+├── constants/                   # 定数定義
+│   └── tags.ts                  # タグID・カテゴリー名・タブ定数
+└── utils/                       # ユーティリティ関数
+    └── imageFilters.ts          # 画像フィルタリング関数群
 ```
 
 ### 設計の考え方
