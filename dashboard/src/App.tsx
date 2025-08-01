@@ -155,42 +155,26 @@ function App() {
         }
     };
 
-    // 画像データ取得
+    // editImagesが変化したら各メニューstateも再計算し即時反映
     useEffect(() => {
-        fetch(`${apiOrigin}/api/images`)
-            .then((res) => {
-                if (!res.ok) throw new Error("API error");
-                return res.json();
-            })
-            .then((data: ImageItem[]) => {
-                // 公開画像のみ抽出（型を文字列で統一判定）
-                const publicImages = data.filter(
-                    (img) =>
-                        String(img.is_public) === "1" || img.is_public === true
-                );
-                // 限定メニュー: tagsに2が含まれる
-                setLimitedMenu(
-                    publicImages.filter(
-                        (img) => Array.isArray(img.tags) && img.tags.includes(2)
-                    )
-                );
-                // 通常メニュー: tagsに1が含まれる
-                setNormalMenu(
-                    publicImages.filter(
-                        (img) => Array.isArray(img.tags) && img.tags.includes(1)
-                    )
-                );
-                // サイドメニュー: category_nameが"サイドメニュー"
-                setSideMenu(
-                    publicImages.filter(
-                        (img) => img.category_name === "サイドメニュー"
-                    )
-                );
-            })
-            .catch(() => {
-                // データ取得失敗時の処理（必要ならUI追加）
-            });
-    }, [apiOrigin]);
+        // 公開画像のみ抽出（型を文字列で統一判定）
+        const publicImages = editImages.filter(
+            (img) => String(img.is_public) === "1" || img.is_public === true
+        );
+        setLimitedMenu(
+            publicImages.filter(
+                (img) => Array.isArray(img.tags) && img.tags.includes(2)
+            )
+        );
+        setNormalMenu(
+            publicImages.filter(
+                (img) => Array.isArray(img.tags) && img.tags.includes(1)
+            )
+        );
+        setSideMenu(
+            publicImages.filter((img) => img.category_name === "サイドメニュー")
+        );
+    }, [editImages]);
 
     return (
         <main className="w-full max-w-xl mx-auto px-2 sm:px-4 py-8 min-h-[900px]">
