@@ -87,7 +87,9 @@ const ImageSearch: React.FC<Props> = (props) => {
         <div className={className}>
             <input
                 type="text"
-                className="border rounded px-2 py-1 text-sm w-full max-w-xs"
+                inputMode="text"
+                className="border rounded px-2 py-1 text-base w-full max-w-xs md:text-sm"
+                style={{ fontSize: "16px" }}
                 placeholder={placeholder}
                 value={searchTitle}
                 onChange={handleSearchChange}
