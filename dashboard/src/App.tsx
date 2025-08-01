@@ -87,6 +87,30 @@ function App() {
     } = useSearchFilters();
     // 画像絞り込み（検索・タグ・公開状態など）
     const { filteredImages } = useImageFiltering(editImages, filters);
+    // タイトル検索用のstate
+    const [searchTitle, setSearchTitle] = useState<string>("");
+
+    // 文字列の正規化関数（ひらがな・カタカナ・英数字を統一）
+    const normalize = (str: string): string => {
+        return str
+            .toLowerCase()
+            .replace(/[ァ-ヶ]/g, (match) =>
+                String.fromCharCode(match.charCodeAt(0) - 0x60)
+            ) // カタカナ→ひらがな
+            .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (match) =>
+                String.fromCharCode(match.charCodeAt(0) - 0xfee0)
+            ); // 全角英数→半角
+    };
+
+    // 最終的なフィルタリング（カテゴリ・タグ・公開状態 + タイトル検索）
+    const finalFilteredImages = searchTitle.trim()
+        ? filteredImages.filter((img) => {
+              return (
+                  typeof img.title === "string" &&
+                  normalize(img.title).includes(normalize(searchTitle))
+              );
+          })
+        : filteredImages;
     // メニュー並び替え・DnD管理
     const { menuData, createSortHandler, updateDisplayOrder, handleDragEnd } =
         useMenuManagement(editImages, apiOrigin);
@@ -96,7 +120,7 @@ function App() {
         setCurrentPage: setEditPage,
         paginatedItems,
         resetPage,
-    } = usePagination(filteredImages, 10);
+    } = usePagination(finalFilteredImages, 10);
 
     // 初回マウント時に画像一覧を取得
     useEffect(() => {
@@ -189,9 +213,27 @@ function App() {
                         onReset={resetFilters}
                         onPageReset={resetPage}
                     />
+                    {/* タイトル検索フォーム */}
+                    <div className="mb-4 flex items-center gap-2">
+                        <input
+                            type="text"
+                            className="border rounded px-2 py-1 text-sm w-full max-w-xs"
+                            placeholder="タイトルで検索"
+                            value={searchTitle}
+                            onChange={(e) => setSearchTitle(e.target.value)}
+                        />
+                        {searchTitle && (
+                            <button
+                                className="text-xs text-gray-500 px-2 py-1 border rounded"
+                                onClick={() => setSearchTitle("")}
+                            >
+                                クリア
+                            </button>
+                        )}
+                    </div>
                     <Pagination
                         current={editPage}
-                        total={filteredImages.length}
+                        total={finalFilteredImages.length}
                         pageSize={10}
                         onChange={setEditPage}
                     />

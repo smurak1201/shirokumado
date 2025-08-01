@@ -124,91 +124,14 @@ const ImageEditSection: React.FC<Props> = (props) => {
         }
     };
 
-    // タイトル検索用のstate
-    const [searchTitle, setSearchTitle] = useState<string>("");
-
-    // 文字列の正規化関数（ひらがな・カタカナ・英数字を統一）
-    const normalize = (str: string): string => {
-        return str
-            .toLowerCase()
-            .replace(/[ァ-ヶ]/g, (match) =>
-                String.fromCharCode(match.charCodeAt(0) - 0x60)
-            ) // カタカナ→ひらがな
-            .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (match) =>
-                String.fromCharCode(match.charCodeAt(0) - 0xfee0)
-            ); // 全角英数→半角
-    };
-
     const filteredImages = editImages.filter((img) => {
-        // 検索文字が空なら従来通り（カテゴリありまたは編集中のもの）
-        if (!searchTitle.trim()) {
-            if (!!img.category_id) return true;
-            if (activeEditId === img.id) return true;
-            return false;
-        }
-        // 検索文字がある場合は全件から検索（カテゴリ条件を無視）
-        if (
-            typeof img.title === "string" &&
-            normalize(img.title).includes(normalize(searchTitle))
-        ) {
-            return true;
-        }
+        if (!!img.category_id) return true;
+        if (activeEditId === img.id) return true;
         return false;
     });
 
     return (
         <div className="flex flex-col gap-6">
-            {/* タイトル検索フォーム */}
-            <div className="mb-2 flex items-center gap-2">
-                <input
-                    type="text"
-                    className="border rounded px-2 py-1 text-sm w-full max-w-xs"
-                    placeholder="タイトルで検索"
-                    value={searchTitle}
-                    onChange={(e) => setSearchTitle(e.target.value)}
-                />
-                {searchTitle && (
-                    <button
-                        className="text-xs text-gray-500 px-2 py-1 border rounded"
-                        onClick={() => setSearchTitle("")}
-                    >
-                        クリア
-                    </button>
-                )}
-            </div>
-            {/* デバッグ用情報表示 */}
-            <div className="text-xs text-gray-500 mb-2">
-                検索文字: "{searchTitle}" | 全画像数: {editImages.length} |
-                フィルタ後: {filteredImages.length} | 元データ数:{" "}
-                {images.length} |
-                {editImages.length > 0 && (
-                    <span>
-                        {" "}
-                        サンプルタイトル: "{editImages[0]?.title || "なし"}"
-                    </span>
-                )}
-                {searchTitle && editImages.length > 0 && (
-                    <div className="mt-1">
-                        検索対象タイトル一覧:{" "}
-                        {editImages
-                            .map((img) => `"${img.title || "なし"}"`)
-                            .join(", ")}
-                    </div>
-                )}
-                {editImages.length > 0 && (
-                    <div className="mt-1">
-                        カテゴリ状況:{" "}
-                        {editImages
-                            .map(
-                                (img) =>
-                                    `ID${img.id}:${
-                                        img.category_id ? "あり" : "なし"
-                                    }`
-                            )
-                            .join(", ")}
-                    </div>
-                )}
-            </div>
             {editError && <div className="text-red-500 mb-2">{editError}</div>}
             {editLoading && <div className="text-blue-500 mb-2">保存中...</div>}
             {filteredImages.length === 0 ? (
