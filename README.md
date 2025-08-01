@@ -84,7 +84,7 @@ app/
 │   ├── Image.php                   # 画像モデル（画像情報・リレーション定義）
 │   └── User.php                    # ユーザーモデル
 ├── Http/Controllers/
-│   └── ImageController.php # 画像操作のビジネスロジック
+│   └── ImageController.php         # 画像操作のビジネスロジック
 └── Providers/
     ├── AppServiceProvider.php      # アプリケーション設定
     └── RouteServiceProvider.php    # ルーティング設定
