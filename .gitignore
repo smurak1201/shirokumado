@@ -1,3 +1,6 @@
+# 画像アップロード用ディレクトリはGit管理対象外
+/public/images/
+
 *.log
 .DS_Store
 .env
