@@ -26,18 +26,15 @@ import type { ImageItem } from "./components/ImageEditSection";
 import { DragDropContext } from "@hello-pangea/dnd";
 // メニュー表示・並び替えセクション
 import MenuSection from "./MenuSection";
-// 画像編集セクション
-import ImageEditSection from "./components/ImageEditSection";
+// 画像設定セクション（統合）
+import ImageSettings from "./components/ImageSettings";
 // 画像追加フォーム
 import ImageAddForm from "./components/ImageAddForm";
 // ページネーションUI
-import Pagination from "./components/Pagination";
 // タブ定数（ラベル・インデックス）
 import { TAB_INDICES, TAB_LABELS } from "./constants/tags";
 // 検索フィルター管理フック
-import { useSearchFilters } from "./hooks/useSearchFilters";
 // 画像絞り込みロジックフック
-import { useImageFiltering } from "./hooks/useImageFiltering";
 // 画像API操作フック
 import { useImageApi } from "./hooks/useImageApi";
 // カテゴリー・タグ取得フック
@@ -47,9 +44,7 @@ import { useMenuManagement } from "./hooks/useMenuManagement";
 // タブ状態管理フック
 import { useTabManagement } from "./hooks/useTabManagement";
 // ページネーション管理フック
-import { usePagination } from "./hooks/usePagination";
 // 検索フィルターUIコンポーネント
-import SearchFiltersComponent from "./components/SearchFilters";
 
 function App() {
     // APIのベースURL（環境変数から取得）
@@ -78,49 +73,10 @@ function App() {
         fetchImages
     );
     // 検索フィルター状態管理
-    const {
-        setSearchCategory,
-        setSearchPublic,
-        filters,
-        resetFilters,
-        updateTagFilter,
-    } = useSearchFilters();
     // 画像絞り込み（検索・タグ・公開状態など）
-    const { filteredImages } = useImageFiltering(editImages, filters);
-    // タイトル検索用のstate
-    const [searchTitle, setSearchTitle] = useState<string>("");
-
-    // 文字列の正規化関数（ひらがな・カタカナ・英数字を統一）
-    const normalize = (str: string): string => {
-        return str
-            .toLowerCase()
-            .replace(/[ァ-ヶ]/g, (match) =>
-                String.fromCharCode(match.charCodeAt(0) - 0x60)
-            ) // カタカナ→ひらがな
-            .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (match) =>
-                String.fromCharCode(match.charCodeAt(0) - 0xfee0)
-            ); // 全角英数→半角
-    };
-
-    // 最終的なフィルタリング（カテゴリ・タグ・公開状態 + タイトル検索）
-    const finalFilteredImages = searchTitle.trim()
-        ? filteredImages.filter((img) => {
-              return (
-                  typeof img.title === "string" &&
-                  normalize(img.title).includes(normalize(searchTitle))
-              );
-          })
-        : filteredImages;
     // メニュー並び替え・DnD管理
     const { menuData, createSortHandler, updateDisplayOrder, handleDragEnd } =
         useMenuManagement(editImages, apiOrigin);
-    // ページネーション管理
-    const {
-        currentPage: editPage,
-        setCurrentPage: setEditPage,
-        paginatedItems,
-        resetPage,
-    } = usePagination(finalFilteredImages, 10);
 
     // 初回マウント時に画像一覧を取得
     useEffect(() => {
@@ -196,56 +152,14 @@ function App() {
                 </DragDropContext>
             )}
             {activeTab === TAB_INDICES.SETTINGS && (
-                <div className="bg-white rounded-3xl p-6 shadow-sm">
-                    <h2 className="text-lg font-bold mb-4 text-gray-700">
-                        設定（画像編集）
-                    </h2>
-                    <p className="mb-2 text-sm text-gray-500">
-                        画像のタイトルやタグなどを編集できます。
-                    </p>
-                    <SearchFiltersComponent
-                        categoryList={categoryList}
-                        tagList={tagList}
-                        filters={filters}
-                        onCategoryChange={setSearchCategory}
-                        onPublicChange={setSearchPublic}
-                        onTagChange={updateTagFilter}
-                        onReset={resetFilters}
-                        onPageReset={resetPage}
-                    />
-                    {/* タイトル検索フォーム */}
-                    <div className="mb-4 flex items-center gap-2">
-                        <input
-                            type="text"
-                            className="border rounded px-2 py-1 text-sm w-full max-w-xs"
-                            placeholder="タイトルで検索"
-                            value={searchTitle}
-                            onChange={(e) => setSearchTitle(e.target.value)}
-                        />
-                        {searchTitle && (
-                            <button
-                                className="text-xs text-gray-500 px-2 py-1 border rounded"
-                                onClick={() => setSearchTitle("")}
-                            >
-                                クリア
-                            </button>
-                        )}
-                    </div>
-                    <Pagination
-                        current={editPage}
-                        total={finalFilteredImages.length}
-                        pageSize={10}
-                        onChange={setEditPage}
-                    />
-                    <ImageEditSection
-                        apiOrigin={apiOrigin}
-                        images={paginatedItems}
-                        categoryList={categoryList}
-                        tagList={tagList}
-                        onSave={saveImage}
-                        onDeleted={handleImageDeleted}
-                    />
-                </div>
+                <ImageSettings
+                    apiOrigin={apiOrigin}
+                    editImages={editImages}
+                    categoryList={categoryList}
+                    tagList={tagList}
+                    onSave={saveImage}
+                    onDeleted={handleImageDeleted}
+                />
             )}
             {activeTab === TAB_INDICES.ADD && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
