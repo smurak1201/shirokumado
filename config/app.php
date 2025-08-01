@@ -96,6 +96,9 @@ return [
 
     'timezone' => 'Asia/Tokyo',
 
+    // 画像アップロード先パス（.env優先、なければpublic/images）
+    'image_upload_path' => env('IMAGE_UPLOAD_PATH', public_path('images')),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

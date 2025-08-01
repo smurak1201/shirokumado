@@ -27,7 +27,7 @@ class ImageController extends Controller
 
         // 画像ファイル保存
         $file = $request->file('image');
-        $uploadPath = env('IMAGE_UPLOAD_PATH', public_path('images'));
+        $uploadPath = config('app.image_upload_path');
         $filename = uniqid('img_') . '.' . $file->getClientOriginalExtension();
         $file->move($uploadPath, $filename);
 
@@ -187,7 +187,7 @@ class ImageController extends Controller
             $image->tags()->detach();
         }
         // 画像ファイル削除
-        $uploadPath = env('IMAGE_UPLOAD_PATH', public_path('images'));
+        $uploadPath = config('app.image_upload_path');
         $filePath = $uploadPath . DIRECTORY_SEPARATOR . $image->file_path;
         if (is_file($filePath)) {
             @unlink($filePath);
