@@ -106,15 +106,16 @@
 </head>
 <body>
   <div class="container">
-    <h1>白熊堂 ホームページ</h1>
+    <h2>白熊堂 ホームページ</h2>
     <p>このリポジトリは、かき氷店「白熊堂」の公式ホームページのソースコードです。<br>
-    Laravel で Web サイト本体、React でダッシュボードを SPA 構成で開発した学習向けプロジェクトです。</p>
+    Laravel による Web サイト本体と、React によるダッシュボード（SPA 構成）で構成されています。<br>
+    設計・保守性・拡張性を意識したフルスタック構成になっています。</p>
     <hr>
-    <p><strong>このリポジトリの設計・解説・コード生成には GitHub Copilot を活用しています。<br>
-    Copilot は 2025 年 8 月時点までのデータ・知識を元に提案・生成を行っています。</strong></p>
+    <p><strong>本リポジトリの設計・実装には GitHub Copilot を活用しています。<br>
+    Copilot は 2025 年 8 月時点までの知識を元に、設計・実装を支援しています。</strong></p>
     <hr>
-    <h2>学習の進め方・ソースコード理解の順番</h2>
-    <h3>1. まずはディレクトリ構成を把握</h3>
+    <h2>ソースコードの確認・活用の流れ</h2>
+    <h3>1. ディレクトリ構成を把握</h3>
     <pre class="dir-tree">shirokumado/
 ├── app/                    # Laravel アプリケーション本体
 │   ├── Models/             # Eloquent モデル
@@ -137,30 +138,57 @@
         ├── constants/      # 定数定義
         └── utils/          # ユーティリティ関数
     </pre>
-    <h3>2. 学習の順序</h3>
+    <h3>2. 内容把握の順序</h3>
+    <p><strong>Step 1: データベース設計を理解</strong></p>
+    <ul>
+      <li><code>database/migrations/</code> でテーブル構造を確認</li>
+      <li><code>database/seeders/</code> で初期データの投入ロジックを確認</li>
+    </ul>
+    <p><strong>Step 2: Laravel（Web サイト本体）</strong></p>
+    <ul>
+      <li><code>routes/web.php</code> で URL 設計を確認</li>
+      <li><code>app/Http/Controllers/</code> でビジネスロジックを確認</li>
+      <li><code>app/Models/</code> でデータモデルを確認</li>
+      <li><code>resources/views/</code> で UI（Blade）を確認</li>
+    </ul>
+    <p><strong>Step 3: React（管理ダッシュボード）</strong></p>
+    <ul>
+      <li><code>dashboard/src/App.tsx</code> からメイン画面の構成を確認</li>
+      <li><code>dashboard/src/hooks/</code> で React の状態管理パターンを学習</li>
+      <li><code>dashboard/src/components/</code> でコンポーネント設計を確認</li>
+    </ul>
+    <hr>
+    <h2>Laravel Web サイト本体</h2>
+    <h3>使用技術と設計思想</h3>
     <ol>
-      <li><strong>Step 1: データベース設計を理解</strong>
-        <ul>
-          <li><code>database/migrations/</code> でテーブル構造を確認</li>
-          <li><code>database/seeders/</code> で初期データの投入ロジックを確認</li>
-        </ul>
+      <li><code>database/migrations/</code> - テーブル構造
+        <ul><li>DB設計・テーブル定義</li></ul>
       </li>
-      <li><strong>Step 2: Laravel（Web サイト本体）</strong>
-        <ul>
-          <li><code>routes/web.php</code> で URL 設計を確認</li>
-          <li><code>app/Http/Controllers/</code> でビジネスロジックを確認</li>
-          <li><code>app/Models/</code> でデータモデルを確認</li>
-          <li><code>resources/views/</code> で UI（Blade）を確認</li>
-        </ul>
+      <li><code>database/seeders/</code> - 初期データ投入
+        <ul><li>初期データの投入ロジック</li></ul>
       </li>
-      <li><strong>Step 3: React（管理ダッシュボード）</strong>
-        <ul>
-          <li><code>dashboard/src/App.tsx</code> からメイン画面の構成を確認</li>
-          <li><code>dashboard/src/hooks/</code> で React の状態管理パターンを学習</li>
-          <li><code>dashboard/src/components/</code> でコンポーネント設計を確認</li>
-        </ul>
+      <li><code>routes/web.php</code> - URL設計
+        <ul><li>Webルート・URL設計</li></ul>
       </li>
-    </ol>
+      <li><code>app/Http/Controllers/</code> - ビジネスロジック
+        <ul><li>コントローラーによる処理</li></ul>
+      </li>
+      <li><code>app/Models/</code> - データモデル
+        <ul><li>EloquentモデルによるDB操作</li></ul>
+      </li>
+      <li><code>resources/views/</code> - UI（Blade）
+        <ul><li>BladeテンプレートによるUI構築</li></ul>
+      </li>
+      <li><code>dashboard/src/App.tsx</code> - 管理画面の全体構成
+        <ul><li>React SPAのメイン構成</li></ul>
+      </li>
+      <li><code>dashboard/src/hooks/</code> - 状態管理・ロジック分離
+        <ul><li>カスタムフックによるロジック分離</li></ul>
+      </li>
+      <li><code>dashboard/src/components/</code> - UI部品
+        <ul><li>機能ごとのUIコンポーネント</li></ul>
+      </li>
+    </ul>
     <hr>
     <h2>Laravel Web サイト本体</h2>
     <h3>使用技術と設計思想</h3>
@@ -230,82 +258,75 @@ routes/
     <h3>ディレクトリ構成と役割</h3>
     <pre class="dir-tree">dashboard/src/
 ├── App.tsx                      # メインコンポーネント（全体の状態管理・画面構成）
-├── MenuSection.tsx              # 並び替えセクション（DnD対応）
-├── main.tsx                     # Reactエントリポイント
+├── MenuSection.tsx              # 並び替えセクション（DnD 対応）
+├── main.tsx                     # React エントリポイント
 ├── index.css                    # グローバルスタイル
-├── vite-env.d.ts                # Vite型定義
-├── components/                  # UIコンポーネント群
+├── vite-env.d.ts                # Vite 型定義
+├── components/                  # UI コンポーネント群
 │   ├── ImageAddForm.tsx         # 画像追加フォーム（ファイルアップロード・バリデーション）
 │   ├── ImageEditForm.tsx        # 画像編集フォーム（削除機能含む）
-│   ├── ImageEditSection.tsx     # 編集セクション（編集・削除・複数画像管理）
-│   ├── ImageSearch.tsx          # タイトル検索UI（normalize・検索コールバック）
-│   ├── ImageSettings.tsx        # 設定統合UI（フィルター・検索・ページネーション・編集連携）
+│   ├── ImageEditSection.tsx     # 編集セクション全体（複数画像管理）
 │   ├── Pagination.tsx           # ページネーション（前後移動・件数表示）
 │   └── SearchFilters.tsx        # 検索フィルター（カテゴリー・タグ・公開状態）
 ├── hooks/                       # カスタムフック群（状態管理・ロジック分離）
 │   ├── useCategoryTags.ts       # カテゴリー・タグ取得
-│   ├── useDisplayOrderUpdate.ts # 並び順DB保存
-│   ├── useImageApi.ts           # 画像API操作（保存・削除）
-│   ├── useImageFiltering.ts     # 画像絞り込みロジック（フィルター・検索・公開状態）
-│   ├── useMenuManagement.ts     # メニュー並び替え・DnD管理
+│   ├── useDisplayOrderUpdate.ts # 並び順 DB 保存
+│   ├── useImageApi.ts           # 画像 API 操作（保存・削除）
+│   ├── useImageFiltering.ts     # 画像絞り込みロジック
+│   ├── useMenuManagement.ts     # メニュー並び替え・DnD 管理
 │   ├── usePagination.ts         # ページネーション管理
-│   ├── useSearchFilters.ts      # 検索フィルター状態管理（カテゴリー・タグ・公開状態）
-│   └── useTabManagement.ts      # タブ状態管理（LocalStorage永続化）
+│   ├── useSearchFilters.ts      # 検索フィルター状態管理
+│   └── useTabManagement.ts      # タブ状態管理（LocalStorage 永続化）
 ├── constants/                   # 定数定義
-│   └── tags.ts                  # タグID・カテゴリー名・タブ定数
+│   └── tags.ts                  # タグ ID・カテゴリー名・タブ定数
 └── utils/                       # ユーティリティ関数
     └── imageFilters.ts          # 画像フィルタリング関数群
     </pre>
     <h3>設計の考え方</h3>
+    <p><strong>1. カスタムフックによる責任分離</strong></p>
+    <ul>
+      <li>UI（JSX）とロジック（状態管理・API）を分離</li>
+      <li>機能単位でフックを作成し、再利用性・保守性を向上</li>
+      <li>例: useImageFiltering（フィルター・検索・公開状態の絞り込み）、useSearchFilters（フィルター状態管理）、usePagination（ページネーション管理）</li>
+    </ul>
+    <p><strong>2. コンポーネント設計</strong></p>
+    <ul>
+      <li>単一責任の原則（1コンポーネント=1機能）</li>
+      <li>Props型定義による型安全性</li>
+      <li>React.memoによるパフォーマンス最適化</li>
+      <li>ImageSearch（タイトル検索UI）、ImageSettings（設定統合UI）など、機能ごとに分割</li>
+    </ul>
+    <p><strong>3. ファイル読解の推奨順序（2025年8月版）</strong></p>
     <ol>
-      <li><strong>カスタムフックによる責任分離</strong>
-        <ul>
-          <li>UI（JSX）とロジック（状態管理・API）を分離</li>
-          <li>機能単位でフックを作成し、再利用性・保守性を向上</li>
-          <li>例: <code>useImageFiltering</code>（フィルター・検索・公開状態の絞り込み）、<code>useSearchFilters</code>（フィルター状態管理）、<code>usePagination</code>（ページネーション管理）</li>
-        </ul>
-      </li>
-      <li><strong>コンポーネント設計</strong>
-        <ul>
-          <li>単一責任の原則（1コンポーネント=1機能）</li>
-          <li>Props型定義による型安全性</li>
-          <li>React.memoによるパフォーマンス最適化</li>
-          <li><code>ImageSearch</code>（タイトル検索UI）、<code>ImageSettings</code>（設定統合UI）など、機能ごとに分割</li>
-        </ul>
-      </li>
-      <li><strong>ファイル読解の推奨順序（2025年8月版）</strong>
-        <ol>
-          <li><code>dashboard/src/App.tsx</code> - 全体構成・画面遷移・データ取得</li>
-          <li><code>dashboard/src/components/ImageSettings.tsx</code> - 設定統合UI（フィルター・検索・ページネーション・編集連携）</li>
-          <li><code>dashboard/src/components/ImageSearch.tsx</code> - タイトル検索UI・normalizeロジック</li>
-          <li><code>dashboard/src/hooks/</code> - 状態管理・ロジック分離パターン</li>
-          <li><code>dashboard/src/components/</code> - UI部品の構成</li>
-          <li><code>dashboard/src/constants/</code> <code>dashboard/src/utils/</code> - 共通ロジック・定数</li>
-        </ol>
-      </li>
+      <li><code>dashboard/src/App.tsx</code> - 全体構成・画面遷移・データ取得</li>
+      <li><code>dashboard/src/components/ImageSettings.tsx</code> - 設定統合UI（フィルター・検索・ページネーション・編集連携）</li>
+      <li><code>dashboard/src/components/ImageSearch.tsx</code> - タイトル検索UI・normalizeロジック</li>
+      <li><code>dashboard/src/hooks/</code> - 状態管理・ロジック分離パターン</li>
+      <li><code>dashboard/src/components/</code> - UI部品の構成</li>
+      <li><code>dashboard/src/constants/</code> <code>dashboard/src/utils/</code> - 共通ロジック・定数</li>
     </ol>
     <hr>
-    <h2>学習のポイント</h2>
-    <h3>Laravel 部分で学べること</h3>
+    <h2>技術・設計のポイント</h2>
+    <h3>Laravel部分の主な技術・設計要素</h3>
     <ul>
-      <li>MVC アーキテクチャの実装</li>
-      <li>Eloquent ORM によるデータベース操作</li>
-      <li>Blade テンプレートエンジンの活用</li>
-      <li>REST API 設計</li>
+      <li>MVCアーキテクチャによるWebサービス設計</li>
+      <li>Eloquent ORMによるデータベース操作</li>
+      <li>BladeテンプレートエンジンによるUI構築</li>
+      <li>REST API設計</li>
     </ul>
-    <h3>React 部分で学べること</h3>
+    <h3>React部分の主な技術・設計要素</h3>
     <ul>
-      <li>関数コンポーネント + Hooks のモダン開発</li>
+      <li>関数コンポーネント + Hooksによるフロントエンド設計</li>
       <li>カスタムフックによる状態管理・ロジック分離</li>
-      <li>TypeScript による型安全なフロントエンド開発</li>
+      <li>TypeScriptによる型安全な開発</li>
       <li>パフォーマンス最適化（React.memo、useCallback、useMemo）</li>
-      <li>ドラッグ&ドロップの実装</li>
+      <li>ドラッグ&ドロップUI</li>
     </ul>
-    <h3>全体で学べること</h3>
+    <h3>全体構成のポイント</h3>
     <ul>
       <li>フロントエンド（React）とバックエンド（Laravel）の連携</li>
-      <li>REST API を介したデータ通信</li>
-      <li>フォルダ構成・ファイル分割の設計思想</li>
+      <li>REST APIによるデータ通信</li>
+      <li>フォルダ構成・ファイル分割の設計例</li>
       <li>保守性・可読性を意識したコード構成</li>
     </ul>
     <hr>
