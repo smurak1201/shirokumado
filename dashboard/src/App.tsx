@@ -5,6 +5,9 @@ import MenuSection from "./MenuSection";
 import ImageEditSection from "./components/ImageEditSection";
 import ImageAddForm from "./components/ImageAddForm";
 import Pagination from "./components/Pagination";
+import { TAB_INDICES, TAB_LABELS } from "./constants/tags";
+import { useMenuSort } from "./hooks/useMenuSort";
+import { filterImages } from "./utils/imageFilters";
 
 function App() {
     // 設定画面 検索用state
@@ -25,10 +28,17 @@ function App() {
     const [limitedMenu, setLimitedMenu] = useState<ImageItem[]>([]);
     const [normalMenu, setNormalMenu] = useState<ImageItem[]>([]);
     const [sideMenu, setSideMenu] = useState<ImageItem[]>([]);
-    // 並び順トグルstate（true: id昇順, false: id降順）
-    const [limitedAsc, setLimitedAsc] = useState<boolean>(true);
-    const [normalAsc, setNormalAsc] = useState<boolean>(true);
-    const [sideAsc, setSideAsc] = useState<boolean>(true);
+
+    // 並び順トグル用のカスタムフック
+    const {
+        limitedAsc,
+        normalAsc,
+        sideAsc,
+        setLimitedAsc,
+        setNormalAsc,
+        setSideAsc,
+        createSortHandler,
+    } = useMenuSort();
 
     // 画像一覧を一元管理
     const [editImages, setEditImages] = useState<ImageItem[]>([]);
@@ -86,31 +96,25 @@ function App() {
         fetchImages();
     }, [apiOrigin]);
 
-    // 並び替えボタン用: id昇順/降順でstateを更新
-    const handleLimitedSort = () => {
-        setLimitedMenu(
-            limitedAsc
-                ? [...limitedMenu].sort((a, b) => b.id - a.id)
-                : [...limitedMenu].sort((a, b) => a.id - b.id)
-        );
-        setLimitedAsc((v) => !v);
-    };
-    const handleNormalSort = () => {
-        setNormalMenu(
-            normalAsc
-                ? [...normalMenu].sort((a, b) => b.id - a.id)
-                : [...normalMenu].sort((a, b) => a.id - b.id)
-        );
-        setNormalAsc((v) => !v);
-    };
-    const handleSideSort = () => {
-        setSideMenu(
-            sideAsc
-                ? [...sideMenu].sort((a, b) => b.id - a.id)
-                : [...sideMenu].sort((a, b) => a.id - b.id)
-        );
-        setSideAsc((v) => !v);
-    };
+    // 並び替えボタン用のハンドラー
+    const handleLimitedSort = createSortHandler(
+        limitedMenu,
+        setLimitedMenu,
+        limitedAsc,
+        setLimitedAsc
+    );
+    const handleNormalSort = createSortHandler(
+        normalMenu,
+        setNormalMenu,
+        normalAsc,
+        setNormalAsc
+    );
+    const handleSideSort = createSortHandler(
+        sideMenu,
+        setSideMenu,
+        sideAsc,
+        setSideAsc
+    );
 
     // 並び順をDBに登録する関数
     const updateDisplayOrder = async (
@@ -140,35 +144,10 @@ function App() {
 
     // editImagesが変化したら各メニューstateも再計算し即時反映
     useEffect(() => {
-        // 公開画像のみ抽出（型を文字列で統一判定）
-        const publicImages = editImages.filter(
-            (img) => String(img.is_public) === "1" || img.is_public === true
-        );
-        setLimitedMenu(
-            publicImages.filter(
-                (img) =>
-                    Array.isArray(img.tags) &&
-                    img.tags.some(
-                        (t) =>
-                            (typeof t === "number" && t === 2) ||
-                            (typeof t === "object" && "id" in t && t.id === 2)
-                    )
-            )
-        );
-        setNormalMenu(
-            publicImages.filter(
-                (img) =>
-                    Array.isArray(img.tags) &&
-                    img.tags.some(
-                        (t) =>
-                            (typeof t === "number" && t === 1) ||
-                            (typeof t === "object" && "id" in t && t.id === 1)
-                    )
-            )
-        );
-        setSideMenu(
-            publicImages.filter((img) => img.category_name === "サイドメニュー")
-        );
+        const publicImages = filterImages.publicOnly(editImages);
+        setLimitedMenu(filterImages.limitedMenu(publicImages));
+        setNormalMenu(filterImages.normalMenu(publicImages));
+        setSideMenu(filterImages.sideMenu(publicImages));
     }, [editImages]);
 
     // 並び順自動登録: editImagesが変化した直後に各メニューの並び順をDBに自動登録
@@ -191,7 +170,7 @@ function App() {
             {/* タブUI */}
             <div className="flex justify-center">
                 <div className="flex">
-                    {["配置登録", "設定", "追加"].map((label, idx) => (
+                    {TAB_LABELS.map((label, idx) => (
                         <button
                             key={label}
                             type="button"
@@ -218,7 +197,7 @@ function App() {
             </div>
 
             {/* タブごとの画面 */}
-            {activeTab === 0 && (
+            {activeTab === TAB_INDICES.ARRANGEMENT && (
                 <DragDropContext onDragEnd={onDragEnd}>
                     <div className="flex flex-row gap-4">
                         <MenuSection
@@ -260,7 +239,7 @@ function App() {
                     </div>
                 </DragDropContext>
             )}
-            {activeTab === 1 && (
+            {activeTab === TAB_INDICES.SETTINGS && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                     <h2 className="text-lg font-bold mb-4 text-gray-700">
                         設定（画像編集）
@@ -427,7 +406,7 @@ function App() {
                     })()}
                 </div>
             )}
-            {activeTab === 2 && (
+            {activeTab === TAB_INDICES.ADD && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                     <h2 className="text-lg font-bold mb-4 text-gray-700">
                         追加
