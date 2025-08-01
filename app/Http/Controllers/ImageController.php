@@ -178,4 +178,22 @@ class ImageController extends Controller
             'updated_at' => $image->updated_at,
         ]);
     }
+    // 画像削除API
+    public function destroy($id)
+    {
+        $image = Image::findOrFail($id);
+        // タグ紐付け解除
+        if (method_exists($image, 'tags')) {
+            $image->tags()->detach();
+        }
+        // 画像ファイル削除
+        $uploadPath = env('IMAGE_UPLOAD_PATH', public_path('images'));
+        $filePath = $uploadPath . DIRECTORY_SEPARATOR . $image->file_path;
+        if (is_file($filePath)) {
+            @unlink($filePath);
+        }
+        // DBレコード削除
+        $image->delete();
+        return response()->json(['status' => 'deleted'], 200);
+    }
 }
