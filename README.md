@@ -22,11 +22,11 @@ shirokumado/
 │   └── Providers/          # サービスプロバイダー
 ├── database/               # DB設計・データ
 │   ├── migrations/         # テーブル定義
-│   └── seeders/           # 初期データ
+│   └── seeders/            # 初期データ
 ├── resources/              # フロントエンド（Blade）
-│   ├── views/             # Bladeテンプレート
-│   ├── css/               # スタイル
-│   └── js/                # JavaScript
+│   ├── views/              # Bladeテンプレート
+│   ├── css/                # スタイル
+│   └── js/                 # JavaScript
 ├── routes/                 # ルーティング定義
 ├── public/                 # 公開ディレクトリ
 └── dashboard/              # React管理画面（独立したSPA）
@@ -81,13 +81,13 @@ shirokumado/
 ```
 app/
 ├── Models/
-│   ├── Image.php           # 画像モデル（画像情報・リレーション定義）
-│   └── User.php            # ユーザーモデル
+│   ├── Image.php                   # 画像モデル（画像情報・リレーション定義）
+│   └── User.php                    # ユーザーモデル
 ├── Http/Controllers/
 │   └── ImageController.php # 画像操作のビジネスロジック
 └── Providers/
-    ├── AppServiceProvider.php     # アプリケーション設定
-    └── RouteServiceProvider.php   # ルーティング設定
+    ├── AppServiceProvider.php      # アプリケーション設定
+    └── RouteServiceProvider.php    # ルーティング設定
 
 database/
 ├── migrations/
@@ -101,13 +101,13 @@ database/
     └── TagsTableSeeder.php         # タグ初期データ
 
 resources/views/
-├── layout.blade.php        # 共通レイアウト
-├── index.blade.php         # トップページ
-└── components/             # Bladeコンポーネント
+├── layout.blade.php                # 共通レイアウト
+├── index.blade.php                 # トップページ
+└── components/                     # Bladeコンポーネント
 
 routes/
-├── web.php                 # Webルート定義
-└── api.php                 # API ルート定義（ダッシュボード用）
+├── web.php                         # Webルート定義
+└── api.php                         # API ルート定義（ダッシュボード用）
 ```
 
 ---
