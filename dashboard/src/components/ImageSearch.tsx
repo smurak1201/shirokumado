@@ -96,7 +96,7 @@ const ImageSearch: React.FC<Props> = (props) => {
             />
             {searchTitle && (
                 <button
-                    className="text-xs text-gray-500 px-2 py-1 border rounded"
+                    className="text-xs text-gray-500 px-2 py-1 border rounded whitespace-nowrap"
                     onClick={handleClearSearch}
                 >
                     クリア
