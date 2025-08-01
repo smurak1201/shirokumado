@@ -109,6 +109,7 @@ const ImageAddForm: React.FC<Props> = ({
                     <input
                         type="text"
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
@@ -117,6 +118,7 @@ const ImageAddForm: React.FC<Props> = ({
                     キャプション
                     <textarea
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         rows={4}
                         value={caption}
                         onChange={(e) => setCaption(e.target.value)}
@@ -126,6 +128,7 @@ const ImageAddForm: React.FC<Props> = ({
                     カテゴリー
                     <select
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         value={categoryId}
                         onChange={(e) => setCategoryId(Number(e.target.value))}
                     >
@@ -144,6 +147,7 @@ const ImageAddForm: React.FC<Props> = ({
                         step="1"
                         inputMode="numeric"
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         value={priceS}
                         onChange={(e) => setPriceS(e.target.value)}
                     />
@@ -155,6 +159,7 @@ const ImageAddForm: React.FC<Props> = ({
                         step="1"
                         inputMode="numeric"
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         value={priceL}
                         onChange={(e) => setPriceL(e.target.value)}
                     />
@@ -166,6 +171,7 @@ const ImageAddForm: React.FC<Props> = ({
                         step="1"
                         inputMode="numeric"
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         value={priceOther}
                         onChange={(e) => setPriceOther(e.target.value)}
                     />
@@ -200,6 +206,7 @@ const ImageAddForm: React.FC<Props> = ({
                     <input
                         type="datetime-local"
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         value={startAt}
                         onChange={(e) => setStartAt(e.target.value)}
                     />
@@ -209,6 +216,7 @@ const ImageAddForm: React.FC<Props> = ({
                     <input
                         type="datetime-local"
                         className="w-full px-2 py-1 border rounded"
+                        style={{ fontSize: "16px" }}
                         value={endAt}
                         onChange={(e) => setEndAt(e.target.value)}
                     />
