@@ -28,6 +28,7 @@ interface Props {
     categoryList: { id: number; name: string }[];
     tagList: { id: number; name: string }[];
     onSave: (img: ImageItem) => Promise<void>;
+    onDeleted?: () => void;
 }
 
 const ImageEditSection: React.FC<Props> = (props) => {
@@ -142,6 +143,7 @@ const ImageEditSection: React.FC<Props> = (props) => {
                                 }}
                                 onSave={handleEditSave}
                                 onDeleted={(deletedImg) => {
+                                    if (props.onDeleted) props.onDeleted();
                                     setEditImages((prev) =>
                                         prev.filter(
                                             (i) => i.id !== deletedImg.id

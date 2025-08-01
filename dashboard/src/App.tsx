@@ -48,7 +48,7 @@ function App() {
     const [normalAsc, setNormalAsc] = useState<boolean>(true);
     const [sideAsc, setSideAsc] = useState<boolean>(true);
 
-    // 設定画面用: 編集フォームのローカルstate
+    // 画像一覧を一元管理
     const [editImages, setEditImages] = useState<ImageItem[]>([]);
     // カテゴリー一覧
     const [categoryList, setCategoryList] = useState<
@@ -91,22 +91,18 @@ function App() {
         setItems(items);
     };
 
-    // 設定タブ表示時に画像データをセット
-    useEffect(() => {
-        if (activeTab === 1) {
-            fetch(`${apiOrigin}/api/images`)
-                .then((res) => {
-                    if (!res.ok) throw new Error("API error");
-                    return res.json();
-                })
-                .then((data: ImageItem[]) => {
-                    setEditImages(data);
-                })
-                .catch(() => {
-                    setEditImages([]);
-                });
+    // 画像データ取得（初回・追加・編集・削除時に再利用）
+    const fetchImages = async () => {
+        const res = await fetch(`${apiOrigin}/api/images`);
+        if (res.ok) {
+            const data = await res.json();
+            setEditImages(data);
         }
-    }, [activeTab, limitedMenu, normalMenu, sideMenu]);
+    };
+    // 初回・タブ切り替え時に画像一覧取得
+    useEffect(() => {
+        fetchImages();
+    }, [apiOrigin]);
 
     // 並び替えボタン用: id昇順/降順でstateを更新
     const handleLimitedSort = () => {
@@ -419,13 +415,7 @@ function App() {
                                                 throw new Error(
                                                     "保存に失敗しました"
                                                 );
-                                            // 保存後に画像一覧を再取得してstateを更新
-                                            const imagesRes = await fetch(
-                                                `${apiOrigin}/api/images`
-                                            );
-                                            const newImages =
-                                                await imagesRes.json();
-                                            setEditImages(newImages);
+                                            await fetchImages();
                                             alert("保存しました");
                                         } catch (e: any) {
                                             alert(
@@ -433,6 +423,9 @@ function App() {
                                                     "保存に失敗しました"
                                             );
                                         }
+                                    }}
+                                    onDeleted={async () => {
+                                        await fetchImages();
                                     }}
                                 />
                             </>
@@ -453,12 +446,7 @@ function App() {
                         categoryList={categoryList}
                         tagList={tagList}
                         onAdded={async () => {
-                            // 画像追加後に画像一覧を再取得し編集画面に反映
-                            const res = await fetch(`${apiOrigin}/api/images`);
-                            if (res.ok) {
-                                const data = await res.json();
-                                setEditImages(data);
-                            }
+                            await fetchImages();
                         }}
                     />
                 </div>
