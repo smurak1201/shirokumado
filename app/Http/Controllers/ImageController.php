@@ -92,9 +92,14 @@ class ImageController extends Controller
         }
         return response()->json(['status' => 'ok']);
     }
+
+    // 画像詳細表示（Web画面用）
     public function show($id)
     {
         $image = Image::findOrFail($id);
+        if (!$image->is_public) {
+            abort(404);
+        }
         return view('images.show', compact('image'));
     }
 
