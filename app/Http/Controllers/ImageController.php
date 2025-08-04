@@ -35,6 +35,7 @@ class ImageController extends Controller
         $image = new Image();
         $image->file_path = $filename;
         $image->title = $validated['title'];
+        $image->alt_text = $validated['title']; // alt_textにもtitleと同じ値を保存
         $image->caption = $validated['caption'] ?? null;
         $image->category_id = $validated['category_id'];
         $image->price_s = $validated['price_s'] ?? null;
